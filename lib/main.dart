@@ -1,6 +1,7 @@
+import 'package:azkar_app/features/home/view/home_screen.dart';
 import 'package:flutter/material.dart';
 
-import './home.dart';
+
 
 void main() {
   runApp(const NoorAlaNoorApp());
