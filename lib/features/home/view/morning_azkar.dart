@@ -1,12 +1,4 @@
-import 'package:flutter/material.dart';class MorningScreen extends StatelessWidget {
-
-
-  const MorningScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const Center(
-      child: Text("Morning Azkar"),
-    );
-  }
-}
+import 'package:flutter/material.dart';
+import '../../../core/constants/app_strings.dart';
+class MorningScreen extends StatelessWidget { const MorningScreen({super.key}); @override Widget build(BuildContext context) => AzkarPlaceholder(title: AppStrings.of(context, 'morningAzkar'), icon: Icons.wb_sunny_outlined); }
+class AzkarPlaceholder extends StatelessWidget { const AzkarPlaceholder({required this.title, required this.icon}); final String title; final IconData icon; @override Widget build(BuildContext context) => Center(child: Card(child: Padding(padding: const EdgeInsets.all(28), child: Column(mainAxisSize: MainAxisSize.min, children: [Icon(icon, size: 48, color: Theme.of(context).colorScheme.primary), const SizedBox(height: 16), Text(title, style: Theme.of(context).textTheme.titleLarge), const SizedBox(height: 8), Text('Content will appear here.', style: Theme.of(context).textTheme.bodyMedium)])))); }

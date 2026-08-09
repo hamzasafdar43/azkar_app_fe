@@ -1,0 +1,19 @@
+import 'package:flutter/material.dart';
+
+import '../settings/app_settings.dart';
+
+class AppStrings {
+  const AppStrings._();
+
+  static String of(BuildContext context, String key) {
+    final language = AppSettings.of(context).languageCode;
+    return _values[language]?[key] ?? _values['en']![key] ?? key;
+  }
+
+  static const _values = {
+    'en': {'home':'Home','morning':'Morning','evening':'Evening','progress':'Progress','settings':'Settings','language':'Language','appearance':'Appearance','theme':'Theme','system':'System default','light':'Light','dark':'Dark','prophetPrayers':'Prophet Prayers','searchPrayers':'Search Prophet Prayers','authentic':'Authentic Quranic supplications','copy':'Copy Arabic prayer','copied':'Prayer copied','morningAzkar':'Morning Azkar','eveningAzkar':'Evening Azkar','afterSalah':'After Salah','favorites':'Favorites','today':'Today’s journey','goal':'You are close to your daily dhikr goal.'},
+    'ur': {'home':'ہوم','morning':'صبح','evening':'شام','progress':'پیش رفت','settings':'ترتیبات','language':'زبان','appearance':'ظاہری انداز','theme':'تھیم','system':'سسٹم ڈیفالٹ','light':'روشن','dark':'تاریک','prophetPrayers':'انبیاء کی دعائیں','searchPrayers':'انبیاء کی دعائیں تلاش کریں','authentic':'قرآن کی مستند دعائیں','copy':'عربی دعا نقل کریں','copied':'دعا نقل ہو گئی','morningAzkar':'صبح کے اذکار','eveningAzkar':'شام کے اذکار','afterSalah':'نماز کے بعد','favorites':'پسندیدہ','today':'آج کا سفر','goal':'آپ اپنے روزانہ کے ذکر کے ہدف کے قریب ہیں۔'},
+    'fr': {'home':'Accueil','morning':'Matin','evening':'Soir','progress':'Progrès','settings':'Réglages','language':'Langue','appearance':'Apparence','theme':'Thème','system':'Système','light':'Clair','dark':'Sombre','prophetPrayers':'Invocations des prophètes','searchPrayers':'Rechercher des invocations','authentic':'Invocations coraniques authentiques','copy':'Copier l’invocation arabe','copied':'Invocation copiée','morningAzkar':'Adhkar du matin','eveningAzkar':'Adhkar du soir','afterSalah':'Après la prière','favorites':'Favoris','today':'Parcours du jour','goal':'Vous êtes proche de votre objectif quotidien de dhikr.'},
+    'ar': {'home':'الرئيسية','morning':'الصباح','evening':'المساء','progress':'التقدم','settings':'الإعدادات','language':'اللغة','appearance':'المظهر','theme':'السمة','system':'النظام','light':'فاتح','dark':'داكن','prophetPrayers':'أدعية الأنبياء','searchPrayers':'ابحث في أدعية الأنبياء','authentic':'أدعية قرآنية صحيحة','copy':'نسخ الدعاء العربي','copied':'تم نسخ الدعاء','morningAzkar':'أذكار الصباح','eveningAzkar':'أذكار المساء','afterSalah':'بعد الصلاة','favorites':'المفضلة','today':'رحلة اليوم','goal':'أنت قريب من هدفك اليومي من الذكر.'},
+  };
+}

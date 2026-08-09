@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../core/constants/app_strings.dart';
 import '../../../core/widgets/app_bar/home_app_bar.dart';
 import '../../../core/widgets/bottom_navigation/custom_bottom_navigation.dart';
 
@@ -8,8 +9,6 @@ import '../view/home_content.dart';
 import '../view/evening_screen.dart';
 import '../view/progress_screen.dart';
 import '../view/setting_screen.dart';
-
-
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -26,25 +25,18 @@ class _HomeScreenState extends State<HomeScreen> {
     MorningScreen(),
     EveningScreen(),
     ProgressScreen(),
-    SettingScreen()
+    SettingScreen(),
   ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey.shade100,
-
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(70),
-        child: HomeAppBar(
-          greeting: "Assalamu Alaikum",
-        ),
+        child: HomeAppBar(greeting: AppStrings.of(context, 'home')),
       ),
 
-      body: IndexedStack(
-        index: currentIndex,
-        children: pages,
-      ),
+      body: IndexedStack(index: currentIndex, children: pages),
 
       bottomNavigationBar: CustomBottomNavigation(
         currentIndex: currentIndex,
