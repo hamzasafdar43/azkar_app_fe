@@ -1,151 +1,107 @@
 import 'package:flutter/material.dart';
-import '../../../core/theme/app_colors.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
-import '../widgets/home_menu_card.dart';
+
+import '../../../core/constants/app_strings.dart';
 import '../data/home_menu_data.dart';
+import '../widgets/home_menu_card.dart';
 
 class HomeContent extends StatelessWidget {
   const HomeContent({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Column(
-        children: [
-          Align(
-            alignment: Alignment.topCenter,
+    final t = AppStrings.of;
+    final scheme = Theme.of(context).colorScheme;
+    return CustomScrollView(
+      slivers: [
+        SliverPadding(
+          padding: const EdgeInsets.fromLTRB(20, 20, 20, 10),
+          sliver: SliverToBoxAdapter(
             child: Container(
-              margin: const EdgeInsets.only(top: 20),
-              width: 300,
-              height: 210,
+              padding: const EdgeInsets.all(24),
               decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(20),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.1),
-                    blurRadius: 10,
-                    spreadRadius: 2,
-                    offset: Offset(0, 4),
-                  ),
-                ],
-
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(20.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text("Today's Progress" , style: TextStyle(fontSize: 18 , fontWeight: FontWeight.bold , color: AppColors.primary),),
-                    Text("You'r almost at your daily goal."),
-                    SizedBox(height: 14),
-                    Row(
-                      children: [
-                        CircularPercentIndicator(
-                          radius: 48,
-                          lineWidth: 8,
-                          percent: 0.75, // 75%
-                          animation: true,
-                          animationDuration: 1000,
-                          circularStrokeCap: CircularStrokeCap.round,
-                          progressColor: AppColors.primary,
-                          backgroundColor: Colors.grey.shade200,
-                          center: const Text(
-                            "75%",
-                            style: TextStyle(
-                              fontSize: 22,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                        SizedBox(width: 20,),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              children: [
-                                Container(
-                                  height: 40,
-                                  width: 40,
-                                  decoration: const BoxDecoration(
-                                    color: Color(0xFFFED65B),
-                                    shape: BoxShape.circle,
-                                  ),
-                                  child: const Icon(
-                                    Icons.local_fire_department,
-                                    color: Color(0xFF8A5A00),
-                                    size: 20,
-                                  ),
-                                ),
-                                SizedBox(width: 4,),
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text("Streak" , style: TextStyle(fontSize: 14 , fontWeight: FontWeight.bold , color : AppColors.primary),),
-                                    Text("12 Days" , style: TextStyle(fontSize: 16 , fontWeight: FontWeight.w400 , color : Colors.black),),
-                                  ],
-                                )
-                              ],
-                            ),
-                            SizedBox(height: 8,),
-                            Row(
-                              children: [
-                                Container(
-                                  height: 40,
-                                  width: 40,
-                                  decoration: const BoxDecoration(
-                                    color: Color(0xFFB0F0D6),
-                                    shape: BoxShape.circle,
-                                  ),
-                                  child: const Icon(
-                                    Icons.star_outline,
-                                    color: Color(0xFF8A5A00),
-                                    size: 20,
-                                  ),
-                                ),
-                                SizedBox(width: 4,),
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text("Focus" , style: TextStyle(fontSize: 14 , fontWeight: FontWeight.bold , color : AppColors.primary),),
-                                    Text("Deep" , style: TextStyle(fontSize: 16 , fontWeight: FontWeight.w400 , color : Colors.black),),
-                                  ],
-                                )
-                              ],
-                            )
-                          ],
-                        )
-
-                      ],
-                    )
-                  ],
-
+                borderRadius: BorderRadius.circular(28),
+                gradient: const LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [Color(0xFF0B5D4B), Color(0xFF1B7A63)],
                 ),
+                boxShadow: const [BoxShadow(color: Color(0x260B5D4B), blurRadius: 18, offset: Offset(0, 8))],
+              ),
+              child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                const Row(children: [
+                  Icon(Icons.mosque_outlined, color: Color(0xFFF4D57C)),
+                  SizedBox(width: 8),
+                  Text('بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ', textDirection: TextDirection.rtl, style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600)),
+                ]),
+                const SizedBox(height: 28),
+                Text(t(context, 'today'), style: const TextStyle(color: Colors.white, fontSize: 26, fontWeight: FontWeight.w700)),
+                const SizedBox(height: 8),
+                Text(t(context, 'goal'), style: const TextStyle(color: Color(0xFFE4F2EC), height: 1.5)),
+                const SizedBox(height: 22),
+                Row(children: const [
+                  _HeroPill(icon: Icons.local_fire_department_outlined, label: '12 day streak'),
+                  SizedBox(width: 10),
+                  _HeroPill(icon: Icons.auto_awesome_outlined, label: 'Deep focus'),
+                ]),
+              ]),
+            ),
+          ),
+        ),
+        SliverPadding(
+          padding: const EdgeInsets.fromLTRB(20, 10, 20, 8),
+          sliver: SliverToBoxAdapter(
+            child: Card(
+              color: scheme.surface,
+              child: Padding(
+                padding: const EdgeInsets.all(18),
+                child: Row(children: [
+                  CircularPercentIndicator(
+                    radius: 34, lineWidth: 6, percent: .75, animation: true,
+                    circularStrokeCap: CircularStrokeCap.round,
+                    progressColor: scheme.primary, backgroundColor: scheme.primaryContainer,
+                    center: const Text('75%', style: TextStyle(fontWeight: FontWeight.w700)),
+                  ),
+                  const SizedBox(width: 18),
+                  Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                    Text('Daily dhikr progress', style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700)),
+                    const SizedBox(height: 5),
+                    Text('Three more moments of remembrance to reach today’s goal.', style: Theme.of(context).textTheme.bodySmall?.copyWith(height: 1.4)),
+                  ])),
+                ]),
               ),
             ),
           ),
-          SizedBox(height: 20,),
-          Padding(
-            padding: const EdgeInsets.all(20),
-            child: GridView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: menus.length,
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                crossAxisSpacing: 15,
-                mainAxisSpacing: 15,
-                childAspectRatio: 0.9,
-              ),
-              itemBuilder: (context, index) {
-                return HomeMenuCard(
-                  menu: menus[index],
-                );
-              },
+        ),
+        SliverPadding(
+          padding: const EdgeInsets.fromLTRB(20, 16, 20, 12),
+          sliver: SliverToBoxAdapter(
+            child: Text('Explore', style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700)),
+          ),
+        ),
+        SliverPadding(
+          padding: const EdgeInsets.fromLTRB(20, 0, 20, 28),
+          sliver: SliverGrid.builder(
+            itemCount: menus.length,
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2, mainAxisSpacing: 14, crossAxisSpacing: 14, childAspectRatio: .9,
             ),
-          )
-        ],
-      ),
+            itemBuilder: (context, index) => HomeMenuCard(menu: menus[index]),
+          ),
+        ),
+      ],
     );
   }
+}
+
+class _HeroPill extends StatelessWidget {
+  const _HeroPill({required this.icon, required this.label});
+  final IconData icon;
+  final String label;
+  @override
+  Widget build(BuildContext context) => Container(
+    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+    decoration: BoxDecoration(color: Colors.white.withOpacity(.14), borderRadius: BorderRadius.circular(12)),
+    child: Row(mainAxisSize: MainAxisSize.min, children: [Icon(icon, color: const Color(0xFFF4D57C), size: 17), const SizedBox(width: 5), Text(label, style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w600))]),
+  );
 }

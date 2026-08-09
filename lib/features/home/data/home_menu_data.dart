@@ -2,6 +2,7 @@ import 'package:azkar_app/features/home/view/evening_screen.dart';
 import 'package:flutter/material.dart';
 import '../model/home_menu_model.dart';
 import '../view/morning_azkar.dart';
+import '../../prophet_prayers/screens/prophet_prayers_screen.dart';
 
 
 const List<HomeMenuModel> menus = [
@@ -48,5 +49,16 @@ const List<HomeMenuModel> menus = [
     textColor :Colors.black,
     subtitleColor : Colors.black,
     screen: EveningScreen(),
+  ),
+
+  HomeMenuModel(
+    title: "Prophet Prayers",
+    subtitle: "Quranic supplications",
+    icon: Icons.volunteer_activism_outlined,
+    backgroundColor: Color(0xFFE8F5F0),
+    iconColor: Color(0xFF0B5D4B),
+    textColor: Colors.black,
+    subtitleColor: Colors.black,
+    screen: ProphetPrayersScreen(),
   ),
 ];

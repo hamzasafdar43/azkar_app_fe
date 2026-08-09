@@ -15,7 +15,7 @@ class HomeAppBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: Colors.white,
+      color: Theme.of(context).colorScheme.surface,
 
       child: SafeArea(
 
@@ -32,13 +32,12 @@ class HomeAppBar extends StatelessWidget {
               const SizedBox(width: 8),
 
               Expanded(
-                child: Text(
-                  greeting,
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF0B5D4B),
-                  ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(greeting, style: Theme.of(context).textTheme.labelLarge),
+                    Text('Azkar', style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w700)),
+                  ],
                 ),
               ),
 
