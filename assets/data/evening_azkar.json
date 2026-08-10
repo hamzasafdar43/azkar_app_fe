@@ -1,0 +1,39 @@
+{
+  "id": "evening_azkar",
+  "title": {"ar": "أذكار المساء", "en": "Evening Azkar", "ur": "شام کے اذکار", "fr": "Adhkar du soir"},
+  "description": {"ar": "أذكار لتختم بها يومك وتستريح بها أمام الله.", "en": "Supplications to close your day and rest peacefully before Allah.", "ur": "دعائیں جو آپ کے دن کو بند کریں اور اللہ کے حضور سکون دیں۔", "fr": "Invocations pour clore votre journée et trouver la paix devant Allah."},
+  "items": [
+    {
+      "id": "evening_001",
+      "title": {"ar": "ذكر التسبيح", "en": "Evening Tasbeeh", "ur": "شام کا تسبیح", "fr": "Tasbih du soir"},
+      "dua_arabic": "سُبْحَانَ اللهِ وَبِحَمْدِهِ، سُبْحَانَ اللهِ الْعَظِيمِ",
+      "translation": {"ar": "پاک ہے اللہ اور اس کی حمد ہو، پاک ہے اللہ عظمت والا۔", "en": "Glory be to Allah and praise Him, glory be to Allah the Magnificent.", "ur": "اللہ پاک ہے اور اس کی تعریف ہو، اللہ عظمت والا پاک ہے۔", "fr": "Gloire à Allah et louange à Lui, gloire à Allah le Magnifique."},
+      "source_type": "sunnah",
+      "reference": "Sahih Muslim"
+    },
+    {
+      "id": "evening_002",
+      "title": {"ar": "دعاء المساء", "en": "Evening Prayer", "ur": "شام کی دعا", "fr": "Prière du soir"},
+      "dua_arabic": "اللَّهُمَّ أَنْتَ رَبِّي لَا إِلَهَ إِلَّا أَنْتَ، خَلَقْتَنِي وَأَنَا عَبْدُكَ...",
+      "translation": {"ar": "اے اللہ! تو میرا رب ہے، تیرے سوا کوئی معبود نہیں، تو نے مجھے پیدا کیا اور میں تیرا بندہ ہوں...", "en": "O Allah, You are my Lord, there is no deity but You. You created me and I am Your servant...", "ur": "اے اللہ! تو میرا رب ہے، تیرے سوا کوئی معبود نہیں، تو نے مجھے پیدا کیا اور میں تیرا بندہ ہوں...", "fr": "Ô Allah, Tu es mon Seigneur, il n'y a point de divinité hormis Toi. Tu m'as créé et je suis Ton serviteur..."},
+      "source_type": "sunnah",
+      "reference": "Sahih al-Bukhari"
+    },
+    {
+      "id": "evening_003",
+      "title": {"ar": "آية الكرسي", "en": "Ayat al-Kursi", "ur": "آیت الکرسی", "fr": "Ayat al-Kursi"},
+      "dua_arabic": "اللَّهُ لَا إِلَٰهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ...",
+      "translation": {"ar": "اللہ کے سوا کوئی معبود نہیں، وہ زندہ، قائم ہے...", "en": "Allah! There is no deity except Him, the Ever-Living, the Sustainer of existence...", "ur": "اللہ کے سوا کوئی معبود نہیں، وہ زندہ ہے، سب کا سہارا ہے...", "fr": "Allah, il n'y a point de divinité en dehors de Lui, le Vivant, le Sustentateur..."},
+      "source_type": "quran",
+      "reference": "Quran 2:255"
+    },
+    {
+      "id": "evening_004",
+      "title": {"ar": "دعاء الليل", "en": "Night Supplication", "ur": "رات کی دعا", "fr": "Supplication de la nuit"},
+      "dua_arabic": "اللَّهُمَّ بِكَ أَمْسَيْنَا وَبِكَ أَصْبَحْنَا، وَبِكَ نَحْيَا وَبِكَ نَمُوتُ، وَإِلَيْكَ النُّشُورُ",
+      "translation": {"ar": "اے اللہ! تیرے ساتھ ہم شام ہوئے اور تیرے ساتھ ہم صبح ہوئے، تیرے ساتھ ہم زندہ ہیں اور تیرے ساتھ ہم م مرتے ہیں، اور تیرے ہی پاس اٹھایا جائے گا۔", "en": "O Allah, by Your leave we have reached the evening and by Your leave we have reached the morning. By Your leave we live and die and unto You is our return.", "ur": "اے اللہ! تیرے اذن سے ہم شام ہوئے اور تیرے اذن سے ہم صبح ہوئے، تیرے اذن سے ہم زندہ ہیں اور تیرے اذن سے ہم مرتے ہیں، اور ہماری واپسی تیرے پاس ہے۔", "fr": "Ô Allah, par Ta permission nous sommes arrivés au soir et par Ta permission nous sommes arrivés au matin. Par Ta permission nous vivons et mourons et vers Toi est notre retour."},
+      "source_type": "sunnah",
+      "reference": "Sahih al-Bukhari"
+    }
+  ]
+}

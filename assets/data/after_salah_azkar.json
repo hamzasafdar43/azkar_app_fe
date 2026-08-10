@@ -1,0 +1,39 @@
+{
+  "id": "after_salah_azkar",
+  "title": {"ar": "أذكار بعد الصلاة", "en": "After Salah Azkar", "ur": "نماز کے بعد کے اذکار", "fr": "Adhkar après la prière"},
+  "description": {"ar": "أذكار عقب الصلاة لتثبيت القلب وشكر الله.", "en": "Remembrances after prayer to steady the heart and thank Allah.", "ur": "نماز کے بعد کے اذکار دل کو مضبوط کرنے اور اللہ کا شکر ادا کرنے کے لیے۔", "fr": "Invocations après la prière pour apaiser le cœur et remercier Allah."},
+  "items": [
+    {
+      "id": "after_salah_001",
+      "title": {"ar": "ذكر الحمد", "en": "Praise of Allah", "ur": "اللہ کی حمد", "fr": "Louange à Allah"},
+      "dua_arabic": "الْحَمْدُ لِلَّهِ رَبِّ الْعَالَمِينَ",
+      "translation": {"ar": "تمام تعریفیں اللہ کے لیے ہیں جو تمام جہانوں کا رب ہے۔", "en": "All praise is due to Allah, Lord of the worlds.", "ur": "تمام تعریفیں اللہ ہی کے لیے ہیں جو سارے جہانوں کا رب ہے۔", "fr": "Louange à Allah, Seigneur des mondes."},
+      "source_type": "quran",
+      "reference": "Quran 1:2"
+    },
+    {
+      "id": "after_salah_002",
+      "title": {"ar": "دعاء القنوت", "en": "Qunut Supplication", "ur": "قنوت کی دعا", "fr": "Supplication du qunūt"},
+      "dua_arabic": "اللَّهُمَّ اهْدِنَا وَسَدِّدْنَا وَاجْعَلْنَا مِنْ عِبَادِكَ الصَّالِحِينَ",
+      "translation": {"ar": "اے اللہ! ہمیں ہدایت دے، درست راستہ دکھا، اور ہمیں اپنے نیک بندوں میں سے بنا۔", "en": "O Allah, guide us and make us steadfast, and make us among Your righteous servants.", "ur": "اے اللہ! ہمیں ہدایت دے، ہمیں ثابت قدم کر، اور ہمیں اپنے نیک بندوں میں شامل فرما۔", "fr": "Ô Allah, guide-nous, rends-nous fermes et fais de nous Tes serviteurs justes."},
+      "source_type": "dua",
+      "reference": "Supplication after prayer"
+    },
+    {
+      "id": "after_salah_003",
+      "title": {"ar": "دعاء الشكر", "en": "Gratitude Prayer", "ur": "شکر کی دعا", "fr": "Prière de gratitude"},
+      "dua_arabic": "اللَّهُمَّ لَكَ الْحَمْدُ أَنْتَ كَمَا أَثْنَيْتَ عَلَىٰ نَفْسِكَ، وَبِكَمْ تَصِفُهُ قَدْ أَحْسَنْتَ تَسْبِيحَكَ",
+      "translation": {"ar": "اے اللہ! تیری ہی حمد ہے جیسی تو نے اپنی ذات پر کی، اور جیسے تو خود اپنے لئے بیان کرتا ہے، تو نے تصدیق میں نیکی فرمائی۔", "en": "O Allah, all praise is Yours as You have praised Yourself, and blessed be Your magnificence as You have praised it.", "ur": "اے اللہ! تمام حمد تیرے لیے ہے جیسا کہ تو نے اپنی ذات کی تعریف کی، اور تیری شان بابرکت ہو جیسا کہ تو نے اسے بیان کیا۔", "fr": "Ô Allah, toute louange est à Toi comme Tu as loué Toi-même, et béni soit Ton éclat comme Tu l'as décrit."},
+      "source_type": "remembrance",
+      "reference": "Evening Dhikr"
+    },
+    {
+      "id": "after_salah_004",
+      "title": {"ar": "دعاء الاستعانة", "en": "Prayer for Help", "ur": "مدد کی دعا", "fr": "Prière d'aide"},
+      "dua_arabic": "اللَّهُمَّ إِنِّي أَسْأَلُكَ عِلْمًا نَافِعًا وَرِزْقًا طَيِّبًا وَعَمَلًا مُتَقَبَّلًا",
+      "translation": {"ar": "اے اللہ! میں تجھ سے ایسے علم، پاک رزق، اور قبول شدہ عمل کا طالب ہوں۔", "en": "O Allah, I ask You for beneficial knowledge, good provision, and accepted deeds.", "ur": "اے اللہ! میں تجھ سے فائدہ مند علم، پاک رزق، اور قبول شدہ عمل کا طلبگار ہوں۔", "fr": "Ô Allah, je Te demande une science utile, une subsistance pure et des actes acceptés."},
+      "source_type": "dua",
+      "reference": "Declared supplication"
+    }
+  ]
+}
