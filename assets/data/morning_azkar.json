@@ -1,0 +1,39 @@
+{
+  "id": "morning_azkar",
+  "title": {"ar": "أذكار الصباح", "en": "Morning Azkar", "ur": "صبح کے اذکار", "fr": "Adhkar du matin"},
+  "description": {"ar": "أدعية وردت عن النبي ﷺ لبدء اليوم بذكر الله.", "en": "Supplications from the Prophet ﷺ to begin the day with remembrance of Allah.", "ur": "دن کا آغاز اللہ کے ذکر سے کرنے کے لیے نبی ﷺ کی وارد کردہ دعائیں۔", "fr": "Invocations du Prophète ﷺ pour commencer la journée par le souvenir d'Allah."},
+  "items": [
+    {
+      "id": "morning_001",
+      "title": {"ar": "بسملة صباحية", "en": "Morning Bismillah", "ur": "صبح کی بسملہ", "fr": "Bismillah du matin"},
+      "dua_arabic": "بِسْمِ اللهِ الَّذِي لَا يَضُرُّ مَعَ اسْمِهِ شَيْءٌ فِي الْأَرْضِ وَلَا فِي السَّمَاءِ وَهُوَ السَّمِيعُ الْعَلِيمُ",
+      "translation": {"ar": "اسم اللہ کے ساتھ، جس کے نام کے ساتھ نہ زمین میں اور نہ آسمان میں کوئی چیز نقصان پہنچا سکتی ہے، وہی سننے والا، جاننے والا ہے۔", "en": "In the name of Allah with whose name nothing on earth or in heaven can cause harm, and He is the All-Hearing, All-Knowing.", "ur": "اللہ کے نام سے جس کے نام سے زمین اور آسمان میں کوئی چیز نقصان نہیں پہنچا سکتی، وہ سننے والا، جاننے والا ہے۔", "fr": "Au nom d'Allah, au nom duquel rien sur terre ni dans les cieux ne peut nuire, et Il est l'Audient, l'Omniscient."},
+      "source_type": "sunnah",
+      "reference": "Sahih al-Bukhari"
+    },
+    {
+      "id": "morning_002",
+      "title": {"ar": "ذكر الاستعاذة", "en": "Morning Refuge Prayer", "ur": "صبح کی پناہ کی دعا", "fr": "Invocation de refuge du matin"},
+      "dua_arabic": "أَعُوذُ بِكَلِمَاتِ اللَّهِ التَّامَّاتِ مِنْ شَرِّ مَا خَلَقَ",
+      "translation": {"ar": "میں اللہ کے مکمل کلمات کی پناہ لیتا ہوں ہر اُس شیءَ کے شر سے جو اس نے پیدا کیا۔", "en": "I seek refuge in the perfect words of Allah from the evil of what He has created.", "ur": "میں اللہ کے کامل کلمات کی پناہ لیتا ہوں ہر اُس چیز کے شر سے جو اس نے پیدا کی۔", "fr": "Je cherche refuge dans les paroles parfaites d'Allah contre le mal de ce qu'Il a créé."},
+      "source_type": "sunnah",
+      "reference": "Sahih Muslim"
+    },
+    {
+      "id": "morning_003",
+      "title": {"ar": "آية الكرسي", "en": "Ayat al-Kursi", "ur": "آیت الکرسی", "fr": "Ayat al-Kursi"},
+      "dua_arabic": "اللَّهُ لَا إِلَٰهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ...",
+      "translation": {"ar": "اللہ کے سوا کوئی معبود نہیں، وہ زندہ، قائم ہے...", "en": "Allah! There is no deity except Him, the Ever-Living, the Sustainer of existence...", "ur": "اللہ کے سوا کوئی معبود نہیں، وہ زندہ ہے، سب کا سہارا ہے...", "fr": "Allah, il n'y a point de divinité en dehors de Lui, le Vivant, le Sustentateur..."},
+      "source_type": "quran",
+      "reference": "Quran 2:255"
+    },
+    {
+      "id": "morning_004",
+      "title": {"ar": "دعاء الصباح", "en": "Morning Supplication", "ur": "صبح کی دعا", "fr": "Supplication du matin"},
+      "dua_arabic": "اللَّهُمَّ أَنْتَ رَبِّي لَا إِلَهَ إِلَّا أَنْتَ خَلَقْتَنِي وَأَنَا عَبْدُكَ...",
+      "translation": {"ar": "اے اللہ! تو میرا رب ہے، تیرے سوا کوئی معبود نہیں، تو نے مجھے پیدا کیا اور میں تیرے بندہ ہوں...", "en": "O Allah, You are my Lord, there is no deity but You. You created me and I am Your servant...", "ur": "اے اللہ! تو میرا رب ہے، تیرے سوا کوئی معبود نہیں، تو نے مجھے پیدا کیا اور میں تیرا بندہ ہوں...", "fr": "Ô Allah, Tu es mon Seigneur, il n'y a point de divinité hormis Toi. Tu m'as créé et je suis Ton serviteur..."},
+      "source_type": "sunnah",
+      "reference": "Sahih al-Bukhari"
+    }
+  ]
+}

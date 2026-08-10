@@ -63,7 +63,7 @@ flutter:
 
   assets:
     - assets/image/
-    - assets/data/prophet_prayers.json
+    - assets/data/
 
 
   # An image asset can refer to one or more resolution-specific "variants", see

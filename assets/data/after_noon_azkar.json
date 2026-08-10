@@ -1,0 +1,39 @@
+{
+  "id": "after_noon_azkar",
+  "title": {"ar": "أذكار بعد الظهر", "en": "After Noon Azkar", "ur": "دوپہر کے بعد کے اذکار", "fr": "Adhkar de l'après-midi"},
+  "description": {"ar": "أذكار تقوية القلب في وقت الظهيرة وتذكير بالرحمة الإلهية.", "en": "Remembrances to strengthen the heart at midday and recall Allah's mercy.", "ur": "دوپہر میں دل کو مضبوط کرنے اور اللہ کی رحمت کو یاد رکھنے کے لیے اذکار۔", "fr": "Souvenirs pour fortifier le cœur à midi et se rappeler la miséricorde d'Allah."},
+  "items": [
+    {
+      "id": "after_noon_001",
+      "title": {"ar": "حَبْسُنَا اللهُ", "en": "Trust in Allah", "ur": "اللہ پر یقین", "fr": "Confiance en Allah"},
+      "dua_arabic": "حَسْبُنَا اللَّهُ وَنِعْمَ الْوَكِيلُ",
+      "translation": {"ar": "اللہ ہی ہمارے لیے کافی ہے، اور وہ بہترین سہارا ہے۔", "en": "Sufficient for us is Allah, and [He is] the best Disposer of affairs.", "ur": "اللہ ہمارے لئے کافی ہے اور وہ بہترین کارساز ہے۔", "fr": "Allah nous suffit, et Il est le meilleur garant."},
+      "source_type": "quran",
+      "reference": "Quran 3:173"
+    },
+    {
+      "id": "after_noon_002",
+      "title": {"ar": "ذكر الاستغفار", "en": "Prayer for Forgiveness", "ur": "استغفار کا ذکر", "fr": "Invocation du pardon"},
+      "dua_arabic": "أَسْتَغْفِرُ اللهَ رَبِّي مِنْ كُلِّ ذَنْبٍ وَأَتُوبُ إِلَيْهِ",
+      "translation": {"ar": "میں اپنے رب اللہ سے ہر گناہ کی مغفرت طلب کرتا ہوں اور اس کی طرف توبہ کرتا ہوں۔", "en": "I seek forgiveness from Allah, my Lord, from every sin and I repent to Him.", "ur": "میں اپنے رب اللہ سے ہر گناہ کی مغفرت طلب کرتا ہوں اور اسی کی طرف توبہ کرتا ہوں۔", "fr": "Je demande pardon à Allah, mon Seigneur, pour chaque péché et Je me repens auprès de Lui."},
+      "source_type": "dua",
+      "reference": "Daily Remembrance"
+    },
+    {
+      "id": "after_noon_003",
+      "title": {"ar": "دعاء الراحة", "en": "Supplication for Peace", "ur": "سکون کی دعا", "fr": "Supplication pour la paix"},
+      "dua_arabic": "الرَّجَاءُ فِي الْعُسْرِ أَنْ يَكُونَ يَمِينًا نَغْنَى بِهِ عَنْ الْبَلاَءِ",
+      "translation": {"ar": "آسانی میں امید یہ ہے کہ وہ دائیں طرف ہو جس کے ذریعے ہم مصیبت سے محفوظ رہیں۔", "en": "Hope in ease is that it may be a right hand by which we are saved from distress.", "ur": "آسانی میں امید یہ ہے کہ وہ دایاں ہاتھ ہو جس سے ہم مصیبت سے بچ جائیں۔", "fr": "L'espoir dans le soulagement est qu'il soit une main droite par laquelle nous sommes protégés de la détresse."},
+      "source_type": "reflection",
+      "reference": "Spiritual Reminder"
+    },
+    {
+      "id": "after_noon_004",
+      "title": {"ar": "ذكر التوحيد", "en": "Declaration of Monotheism", "ur": "توحید کا ذکر", "fr": "Déclaration de monothéisme"},
+      "dua_arabic": "لَا إِلَهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ",
+      "translation": {"ar": "اللہ کے سوا کوئی معبود نہیں، وہ اکیلا ہے، اس کا کوئی شریک نہیں، اسی کا ملک ہے اور اسی کی حمد ہے۔", "en": "There is no deity except Allah alone, without partner. His is the dominion and His is the praise.", "ur": "اللہ کے سوا کوئی معبود نہیں، وہ اکیلا ہے، اس کا کوئی شریک نہیں، اسی کا ہے بادشاہی اور اسی کی حمد ہے۔", "fr": "Il n'y a point de divinité en dehors d'Allah, seul sans associé. À Lui appartient la royauté et la louange."},
+      "source_type": "sunnah",
+      "reference": "Authentic Remembrance"
+    }
+  ]
+}
