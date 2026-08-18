@@ -1,5 +1,10 @@
 class LocalizedText {
-  const LocalizedText({required this.ar, required this.en, required this.ur, required this.fr});
+  const LocalizedText({
+    required this.ar,
+    required this.en,
+    required this.ur,
+    required this.fr,
+  });
 
   final String ar;
   final String en;
@@ -16,11 +21,11 @@ class LocalizedText {
   }
 
   factory LocalizedText.fromJson(Map<String, dynamic> json) => LocalizedText(
-        ar: json['ar'] as String? ?? '',
-        en: json['en'] as String,
-        ur: json['ur'] as String,
-        fr: json['fr'] as String,
-      );
+    ar: json['ar'] as String? ?? '',
+    en: json['en'] as String,
+    ur: json['ur'] as String,
+    fr: json['fr'] as String,
+  );
 }
 
 class AzkarItem {
@@ -41,13 +46,15 @@ class AzkarItem {
   final String? reference;
 
   factory AzkarItem.fromJson(Map<String, dynamic> json) => AzkarItem(
-        id: json['id'] as String,
-        title: LocalizedText.fromJson(json['title'] as Map<String, dynamic>),
-        duaArabic: json['dua_arabic'] as String,
-        translation: LocalizedText.fromJson(json['translation'] as Map<String, dynamic>),
-        sourceType: json['source_type'] as String?,
-        reference: json['reference'] as String?,
-      );
+    id: json['id'] as String,
+    title: LocalizedText.fromJson(json['title'] as Map<String, dynamic>),
+    duaArabic: json['dua_arabic'] as String,
+    translation: LocalizedText.fromJson(
+      json['translation'] as Map<String, dynamic>,
+    ),
+    sourceType: json['source_type'] as String?,
+    reference: json['reference'] as String?,
+  );
 }
 
 class AzkarPage {
@@ -64,13 +71,13 @@ class AzkarPage {
   final List<AzkarItem> items;
 
   factory AzkarPage.fromJson(Map<String, dynamic> json) => AzkarPage(
-        id: json['id'] as String,
-        title: LocalizedText.fromJson(json['title'] as Map<String, dynamic>),
-        description: json['description'] == null
-            ? null
-            : LocalizedText.fromJson(json['description'] as Map<String, dynamic>),
-        items: (json['items'] as List<dynamic>)
-            .map((item) => AzkarItem.fromJson(item as Map<String, dynamic>))
-            .toList(),
-      );
+    id: json['id'] as String,
+    title: LocalizedText.fromJson(json['title'] as Map<String, dynamic>),
+    description: json['description'] == null
+        ? null
+        : LocalizedText.fromJson(json['description'] as Map<String, dynamic>),
+    items: (json['items'] as List<dynamic>)
+        .map((item) => AzkarItem.fromJson(item as Map<String, dynamic>))
+        .toList(),
+  );
 }

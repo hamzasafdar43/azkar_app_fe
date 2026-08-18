@@ -5,26 +5,36 @@
 // gestures. You can also use WidgetTester to find child widgets in the widget
 // tree, read text, and verify that the values of widget properties are correct.
 
-import 'package:flutter/material.dart';
+import 'package:azkar_app/core/services/favorites_service.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-import 'package:azkar_app/main.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
+  TestWidgetsFlutterBinding.ensureInitialized();
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+  test('favorite service stores azkar and prayer ids', () async {
+    SharedPreferences.setMockInitialValues({});
+    final service = FavoritesService();
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
+    await service.toggleAzkar('azkar-1');
+    await service.togglePrayer('prayer-1');
 
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    expect(service.isAzkarFavorite('azkar-1'), isTrue);
+    expect(service.isPrayerFavorite('prayer-1'), isTrue);
+    expect((await service.favoriteAzkarIds).contains('azkar-1'), isTrue);
+    expect((await service.favoritePrayerIds).contains('prayer-1'), isTrue);
+  });
+
+  test('favorite service removes ids when toggled again', () async {
+    SharedPreferences.setMockInitialValues({});
+    final service = FavoritesService();
+
+    await service.toggleAzkar('azkar-2');
+    await service.toggleAzkar('azkar-2');
+    await service.togglePrayer('prayer-2');
+    await service.togglePrayer('prayer-2');
+
+    expect(service.isAzkarFavorite('azkar-2'), isFalse);
+    expect(service.isPrayerFavorite('prayer-2'), isFalse);
   });
 }

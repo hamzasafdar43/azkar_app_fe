@@ -15,7 +15,9 @@ class AzkarService {
   }
 
   Future<AzkarPage> _load(AzkarCategory category) async {
-    final source = await rootBundle.loadString('assets/data/${category.pageId}.json');
+    final source = await rootBundle.loadString(
+      'assets/data/${category.pageId}.json',
+    );
     final json = jsonDecode(source) as Map<String, dynamic>;
     return AzkarPage.fromJson(json);
   }

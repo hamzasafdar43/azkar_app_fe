@@ -6,5 +6,6 @@ class EveningScreen extends StatelessWidget {
   const EveningScreen({super.key});
 
   @override
-  Widget build(BuildContext context) => const AzkarCategoryScreen(category: AzkarCategory.evening);
+  Widget build(BuildContext context) =>
+      const AzkarCategoryScreen(category: AzkarCategory.evening);
 }
