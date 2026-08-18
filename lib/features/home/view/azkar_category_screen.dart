@@ -1,4 +1,5 @@
 import 'package:azkar_app/core/constants/app_strings.dart';
+import 'package:azkar_app/core/services/favorites_service.dart';
 import 'package:azkar_app/core/settings/app_settings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -25,7 +26,9 @@ class _AzkarCategoryScreenState extends State<AzkarCategoryScreen> {
     final languageCode = AppSettings.of(context).languageCode;
 
     return Scaffold(
-      appBar: AppBar(title: Text(AppStrings.of(context, widget.category.titleKey))),
+      appBar: AppBar(
+        title: Text(AppStrings.of(context, widget.category.titleKey)),
+      ),
       body: FutureBuilder<AzkarPage>(
         future: _service.loadPage(widget.category),
         builder: (context, snapshot) {
@@ -49,7 +52,9 @@ class _AzkarCategoryScreenState extends State<AzkarCategoryScreen> {
           final page = snapshot.data!;
           final items = page.items.where((item) {
             if (_query.isEmpty) return true;
-            final text = '${item.title.value(languageCode)} ${item.duaArabic} ${item.translation.value(languageCode)}'.toLowerCase();
+            final text =
+                '${item.title.value(languageCode)} ${item.duaArabic} ${item.translation.value(languageCode)}'
+                    .toLowerCase();
             return text.contains(_query.toLowerCase());
           }).toList();
 
@@ -63,11 +68,18 @@ class _AzkarCategoryScreenState extends State<AzkarCategoryScreen> {
                 decoration: InputDecoration(
                   prefixIcon: const Icon(Icons.search),
                   hintText: AppStrings.of(context, 'searchPrayers'),
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(18)),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(18),
+                  ),
                 ),
               ),
               const SizedBox(height: 18),
-              ...items.map((item) => _AzkarItemCard(item: item, languageCode: languageCode)).toList(),
+              ...items
+                  .map(
+                    (item) =>
+                        _AzkarItemCard(item: item, languageCode: languageCode),
+                  )
+                  .toList(),
               if (items.isEmpty)
                 Padding(
                   padding: const EdgeInsets.only(top: 40),
@@ -99,23 +111,53 @@ class _Header extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(26),
-        gradient: const LinearGradient(colors: [Color(0xFF0B5D4B), Color(0xFF2D755F)]),
-        boxShadow: const [BoxShadow(color: Color(0x22000000), blurRadius: 18, offset: Offset(0, 10))],
+        gradient: const LinearGradient(
+          colors: [Color(0xFF0B5D4B), Color(0xFF2D755F)],
+        ),
+        boxShadow: const [
+          BoxShadow(
+            color: Color(0x22000000),
+            blurRadius: 18,
+            offset: Offset(0, 10),
+          ),
+        ],
       ),
       padding: const EdgeInsets.all(24),
-      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Text(title, style: const TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.w800)),
-        if (description != null) ...[
-          const SizedBox(height: 10),
-          Text(description, style: const TextStyle(color: Color(0xFFD4F1E1), fontSize: 14, height: 1.5)),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            title,
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 24,
+              fontWeight: FontWeight.w800,
+            ),
+          ),
+          if (description != null) ...[
+            const SizedBox(height: 10),
+            Text(
+              description,
+              style: const TextStyle(
+                color: Color(0xFFD4F1E1),
+                fontSize: 14,
+                height: 1.5,
+              ),
+            ),
+          ],
+          const SizedBox(height: 16),
+          Row(
+            children: [
+              _Badge(
+                label: '${card.items.length} Prayers',
+                color: Colors.white70,
+              ),
+              const SizedBox(width: 10),
+              _Badge(label: 'Islamic App', color: const Color(0xFFC7FFD9)),
+            ],
+          ),
         ],
-        const SizedBox(height: 16),
-        Row(children: [
-          _Badge(label: '${card.items.length} Prayers', color: Colors.white70),
-          const SizedBox(width: 10),
-          _Badge(label: 'Islamic App', color: const Color(0xFFC7FFD9)),
-        ]),
-      ]),
+      ),
     );
   }
 }
@@ -127,10 +169,92 @@ class _Badge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-        decoration: BoxDecoration(color: color.withOpacity(.18), borderRadius: BorderRadius.circular(16)),
-        child: Text(label, style: TextStyle(color: color.computeLuminance() > 0.5 ? Colors.black : Colors.white, fontSize: 12, fontWeight: FontWeight.w600)),
-      );
+    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+    decoration: BoxDecoration(
+      color: color.withOpacity(.18),
+      borderRadius: BorderRadius.circular(16),
+    ),
+    child: Text(
+      label,
+      style: TextStyle(
+        color: color.computeLuminance() > 0.5 ? Colors.black : Colors.white,
+        fontSize: 12,
+        fontWeight: FontWeight.w600,
+      ),
+    ),
+  );
+}
+
+class _ActionIconButton extends StatelessWidget {
+  const _ActionIconButton({
+    required this.icon,
+    required this.tooltip,
+    required this.onPressed,
+  });
+
+  final IconData icon;
+  final String tooltip;
+  final VoidCallback onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    return IconButton(
+      tooltip: tooltip,
+      onPressed: onPressed,
+      icon: Icon(icon, size: 20),
+      style: IconButton.styleFrom(
+        backgroundColor: const Color(0xFFEDF7F0),
+        foregroundColor: const Color(0xFF0B5D4B),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      ),
+    );
+  }
+}
+
+class _FavoriteToggleIconButton extends StatefulWidget {
+  const _FavoriteToggleIconButton({
+    required this.isFavorite,
+    required this.onToggle,
+  });
+
+  final bool isFavorite;
+  final Future<void> Function() onToggle;
+
+  @override
+  State<_FavoriteToggleIconButton> createState() =>
+      _FavoriteToggleIconButtonState();
+}
+
+class _FavoriteToggleIconButtonState extends State<_FavoriteToggleIconButton> {
+  late bool _isFavorite;
+
+  @override
+  void initState() {
+    super.initState();
+    _isFavorite = widget.isFavorite;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return IconButton(
+      tooltip: _isFavorite ? 'Remove from favorites' : 'Add to favorites',
+      onPressed: () async {
+        await widget.onToggle();
+        if (mounted) {
+          setState(() => _isFavorite = !_isFavorite);
+        }
+      },
+      icon: Icon(
+        _isFavorite ? Icons.favorite : Icons.favorite_border,
+        color: _isFavorite ? const Color(0xFFC5545D) : const Color(0xFF4E4A52),
+        size: 20,
+      ),
+      style: IconButton.styleFrom(
+        backgroundColor: const Color(0xFFF8F2FA),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      ),
+    );
+  }
 }
 
 class _AzkarItemCard extends StatelessWidget {
@@ -150,33 +274,86 @@ class _AzkarItemCard extends StatelessWidget {
       elevation: 1,
       child: Padding(
         padding: const EdgeInsets.fromLTRB(20, 20, 20, 16),
-        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Row(children: [
-            Expanded(child: Text(title, style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700))),
-            if (item.sourceType != null)
-              Chip(label: Text(item.sourceType!, style: const TextStyle(fontSize: 11)), backgroundColor: const Color(0xFFEDF7F0)),
-          ]),
-          const SizedBox(height: 14),
-          Text(item.duaArabic, textDirection: TextDirection.rtl, textAlign: TextAlign.right, style: Theme.of(context).textTheme.headlineSmall?.copyWith(height: 1.7)),
-          const SizedBox(height: 14),
-          Text(translation, style: Theme.of(context).textTheme.bodyMedium?.copyWith(height: 1.6, color: Colors.grey[800])),
-          const SizedBox(height: 16),
-          Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-            if (item.reference != null)
-              Text(item.reference!, style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.grey[600])),
-            FilledButton.icon(
-              onPressed: () async {
-                await Clipboard.setData(ClipboardData(text: item.duaArabic));
-                if (context.mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppStrings.of(context, 'copied'))));
-                }
-              },
-              icon: const Icon(Icons.copy, size: 18),
-              label: Text(AppStrings.of(context, 'copy')),
-              style: FilledButton.styleFrom(shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18))),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    title,
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+                if (item.sourceType != null)
+                  Chip(
+                    label: Text(
+                      item.sourceType!,
+                      style: const TextStyle(fontSize: 11),
+                    ),
+                    backgroundColor: const Color(0xFFEDF7F0),
+                  ),
+              ],
             ),
-          ]),
-        ]),
+            const SizedBox(height: 14),
+            Text(
+              item.duaArabic,
+              textDirection: TextDirection.rtl,
+              textAlign: TextAlign.right,
+              style: Theme.of(
+                context,
+              ).textTheme.headlineSmall?.copyWith(height: 1.7),
+            ),
+            const SizedBox(height: 14),
+            Text(
+              translation,
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                height: 1.6,
+                color: Colors.grey[800],
+              ),
+            ),
+            const SizedBox(height: 16),
+            Row(
+              children: [
+                if (item.reference != null)
+                  Expanded(
+                    child: Text(
+                      item.reference!,
+                      style: Theme.of(
+                        context,
+                      ).textTheme.bodySmall?.copyWith(color: Colors.grey[600]),
+                    ),
+                  ),
+                const SizedBox(width: 8),
+                _ActionIconButton(
+                  icon: Icons.copy,
+                  tooltip: AppStrings.of(context, 'copy'),
+                  onPressed: () async {
+                    await Clipboard.setData(
+                      ClipboardData(text: item.duaArabic),
+                    );
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(AppStrings.of(context, 'copied')),
+                        ),
+                      );
+                    }
+                  },
+                ),
+                const SizedBox(width: 8),
+                _FavoriteToggleIconButton(
+                  isFavorite: FavoritesService().isAzkarFavorite(item.id),
+                  onToggle: () async {
+                    await FavoritesService().toggleAzkar(item.id);
+                  },
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }

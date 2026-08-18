@@ -6,5 +6,6 @@ class MorningScreen extends StatelessWidget {
   const MorningScreen({super.key});
 
   @override
-  Widget build(BuildContext context) => const AzkarCategoryScreen(category: AzkarCategory.morning);
+  Widget build(BuildContext context) =>
+      const AzkarCategoryScreen(category: AzkarCategory.morning);
 }

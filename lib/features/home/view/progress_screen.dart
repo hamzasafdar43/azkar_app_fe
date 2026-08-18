@@ -15,9 +15,16 @@ class ProgressScreen extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(Icons.insights_outlined, size: 48, color: Theme.of(context).colorScheme.primary),
+              Icon(
+                Icons.insights_outlined,
+                size: 48,
+                color: Theme.of(context).colorScheme.primary,
+              ),
               const SizedBox(height: 18),
-              Text(AppStrings.of(context, 'progress'), style: Theme.of(context).textTheme.headlineSmall),
+              Text(
+                AppStrings.of(context, 'progress'),
+                style: Theme.of(context).textTheme.headlineSmall,
+              ),
               const SizedBox(height: 10),
               Text(
                 'Track your journey with daily dhikr progress and saved reflections.',
