@@ -1,0 +1,59 @@
+# sakinah_docs
+
+Documentation and agent skills for **Sakinah** — a pocket book of the Muslim:
+the transmitted supplications of the Prophet ﷺ, the prophets before him, his
+companions and those who followed them.
+
+Three repositories, no monorepo root:
+
+```
+~/Documents/Projects/AdhkarApp/
+  adhkar_api/           FastAPI + psycopg on Postgres. Also holds the content pipeline.
+  adhkar_app_flutter/   native Flutter client
+  adhkar_docs/          this repo
+```
+
+| | |
+| --- | --- |
+| [docs/PRD.md](docs/PRD.md) | what we are building — features F1–F10, cross-cutting X1–X6 |
+| [docs/architecture.md](docs/architecture.md) | the decisions that are expensive to reverse |
+| [docs/content-sources.md](docs/content-sources.md) | where every word came from, and under what licence |
+| [docs/decisions-pending-review.md](docs/decisions-pending-review.md) | every call made unattended, ranked by how much a second opinion is wanted |
+| [docs/TODO.md](docs/TODO.md) | debt taken on knowingly, and what the user has asked for next |
+| [docs/dev_setup.md](docs/dev_setup.md) | getting it running locally, with no cloud account |
+| [docs/deployment.md](docs/deployment.md) | Neon + Render runbook |
+| [.claude/skills/](.claude/skills) | agent skills — start with `general` |
+
+## The short version
+
+The reference product is **Hisn al-Muslim** — the pocket book that lives in a
+coat pocket and falls open at a bookmark. 327 supplications across seven
+collections, every one of them carrying its source.
+
+Three things the app does that the paper book cannot:
+
+* **Counts for you.** A dhikr said a hundred times is the ordinary case and
+  losing count is the ordinary failure.
+* **Knows what time it is.** The morning sitting is the front door in the
+  morning and the evening one in the evening.
+* **Shows the Arabic properly.** Large, fully vowelled, in a face designed for
+  it, at a size the reader sets.
+
+## Rules that outlive any one task
+
+1. **Every supplication carries its source.** There is no path through the app
+   that shows one without its citation on the same screen. This is the whole
+   basis of trust in the category (X1.1) and it is enforced in three places: a
+   build failure, a `NOT NULL` check, and a test.
+2. **Arabic is never modified.** Stored fully vowelled, exactly as the source
+   has it. The only transformation permitted is *slicing* a supplication out of
+   a longer text, and a slice whose marker does not match fails the build.
+3. **Nothing celebratory.** No points, badges, levels, leaderboards or streaks.
+   Days present, never consecutive days. Someone may open this bereaved (X4).
+4. **The app works with no network, forever.** The whole book is in the binary.
+   Nothing blocks the first screen (X2).
+5. **No location permission, ever.** The morning/evening boundary is the clock.
+   This is not a prayer-times app.
+6. **Migrations are forward-only.** Never edit one that has been applied.
+7. **Handlers never write `WHERE user_id = …`.** Row-level security does it, and
+   a query that forgets returns nothing rather than someone else's record.
