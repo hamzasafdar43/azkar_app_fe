@@ -288,3 +288,59 @@ supplication with nothing marking the join.
 **To reverse.** `clean_hisn_arabic` in `build_content.py`. A better fix would be
 to *split* on the markers into a text field and an instruction field, which is
 the thing worth doing if this bothers anyone.
+
+---
+
+## 14. The app's mark is the *rubʿ al-ḥizb*
+
+**What I did.** The icon is an eight-pointed star with a circle at its centre —
+the ۞ printed in the margin of a mushaf at every quarter of a ḥizb — in paper
+white on a teal field taken from `SakinahColors.accent`. It is drawn by
+`adhkar_app_flutter/design/build_icons.py`, which derives every colour from
+`theme.dart` and every proportion from the star's own radius, and rasterises
+what iOS and Android need. Nothing is hand-drawn and there is no binary source
+file to lose.
+
+Rejected on the way: a crescent (a national flag's emblem, not a book's), a
+mosque or minaret (this is not a place), an open book (unreadable below 60 px),
+and calligraphy of the word *sakīnah* (it would have to be legible at 40 px,
+which no Arabic word is).
+
+**Why this one.** It is the one ornament in the visual vocabulary of the mushaf
+that means *a place in a book you have reached*, which is the whole of what this
+app does. It is two overlapping squares, so it is also the plainest possible
+piece of Islamic geometry: nothing figurative, nothing devotional depicted,
+nothing sectarian, and nothing that would embarrass a user whose home screen a
+colleague can see.
+
+**What is arguable.** The classical proportion — inner radius at 0.765 of the
+outer — makes a calm, solid form; a deeper star (0.58) was tried and reads as a
+burst, which is livelier than X4 wants. That is a taste call and the number is
+one constant. The teal ground is also a choice: a *paper* ground would be truer
+to the app's interior, but it disappears among other icons on a light home
+screen.
+
+**Cost if wrong.** None that compounds. No screen renders the mark yet — it is
+the launcher icon and nothing else — so replacing it touches only generated
+files.
+
+**To reverse.** Edit `INNER_RATIO`, the colours, or `mark()` in
+`design/build_icons.py` and re-run it. Every asset on both platforms is
+regenerated from that one file.
+
+---
+
+## 15. The app now calls itself Sakinah on the home screen
+
+**What I did.** `android:label` was `adhkar_app_flutter` and iOS's
+`CFBundleDisplayName` was `Adhkar App Flutter` — both Flutter template
+defaults. Both now read `Sakinah`.
+
+**Why.** Decision 4 already named the app; this was the template leaking onto
+the home screen.
+
+**Cost if wrong.** The bundle *identifier* is untouched, so nothing about
+signing, the store listing or an installed build changes.
+
+**To reverse.** `android/app/src/main/AndroidManifest.xml` and
+`ios/Runner/Info.plist`.
