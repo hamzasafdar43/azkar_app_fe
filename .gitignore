@@ -1,1 +1,4 @@
 .DS_Store
+
+# App Store Connect API private keys — never commit
+*.p8
