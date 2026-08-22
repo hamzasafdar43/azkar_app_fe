@@ -33,7 +33,7 @@ optional: App Manager cannot create signing certificates, so a lower role gets
 all the way to the archive and fails there.
 
 ```
-~/.appstoreconnect/private_keys/AuthKey_<KEY_ID>.p8   mode 600
+~/.appstoreconnect/private_keys/AuthKey_3S47965Y9P.p8   mode 600
 ```
 
 That path is where `xcodebuild` and `xcrun altool` look without being told, which
@@ -42,7 +42,7 @@ is why the key lives there rather than beside the project.
 | | |
 | --- | --- |
 | Key ID | `3S47965Y9P` |
-| Issuer ID | see App Store Connect → Users and Access → Integrations |
+| Issuer ID | `9c26927e-721a-4c73-8bdf-c852078a34bc` |
 
 **The `.p8` is not in git and must never be.** Git history outlives rotation: a
 key committed once stays recoverable from the history after it has been revoked
@@ -77,7 +77,7 @@ qualifies for the exemption, but the declaration stops being trivially true.
 
 ```bash
 xcrun altool --upload-app -f build/ios/ipa/*.ipa -t ios \
-  --apiKey 3S47965Y9P --apiIssuer <ISSUER_ID>
+  --apiKey 3S47965Y9P --apiIssuer 9c26927e-721a-4c73-8bdf-c852078a34bc
 ```
 
 `ExportOptions.plist` uses `method: app-store-connect` and automatic signing.
