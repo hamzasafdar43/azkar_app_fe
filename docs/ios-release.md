@@ -71,23 +71,67 @@ qualifies for the exemption, but the declaration stops being trivially true.
 
 ## Building and uploading
 
+`flutter build ipa` cannot do this: it has no flag for the API key, so signing
+falls back to whatever Apple ID Xcode is signed into. Drive `xcodebuild`
+directly in two steps instead. Both take the same four authentication flags.
+
 ```bash
-~/flutter/bin/flutter build ipa --export-options-plist=ios/ExportOptions.plist
+xcodebuild -workspace ios/Runner.xcworkspace -scheme Runner -configuration Release \
+  -archivePath build/ios/archive/Runner.xcarchive -destination 'generic/platform=iOS' \
+  -allowProvisioningUpdates \
+  -authenticationKeyPath ~/.appstoreconnect/private_keys/AuthKey_3S47965Y9P.p8 \
+  -authenticationKeyID 3S47965Y9P \
+  -authenticationKeyIssuerID 9c26927e-721a-4c73-8bdf-c852078a34bc \
+  archive
 ```
 
 ```bash
-xcrun altool --upload-app -f build/ios/ipa/*.ipa -t ios \
+xcodebuild -exportArchive -archivePath build/ios/archive/Runner.xcarchive \
+  -exportPath build/ios/ipa -exportOptionsPlist ios/ExportOptions.plist \
+  -allowProvisioningUpdates \
+  -authenticationKeyPath ~/.appstoreconnect/private_keys/AuthKey_3S47965Y9P.p8 \
+  -authenticationKeyID 3S47965Y9P \
+  -authenticationKeyIssuerID 9c26927e-721a-4c73-8bdf-c852078a34bc
+```
+
+```bash
+xcrun altool --upload-app -f build/ios/ipa/Sakinah.ipa -t ios \
   --apiKey 3S47965Y9P --apiIssuer 9c26927e-721a-4c73-8bdf-c852078a34bc
 ```
 
-`ExportOptions.plist` uses `method: app-store-connect` and automatic signing.
-With `-allowProvisioningUpdates`, `xcodebuild` will create the distribution
-certificate and the App Store provisioning profile itself the first time, which
-is the reason the key needs Admin.
+**The archive is signed for development and that is not a problem.** Its
+`Info.plist` will say `Apple Development`; `-exportArchive` re-signs with
+`Apple Distribution` on the way out. Check the artefact, not the archive:
+
+```bash
+codesign -dvvv build/ios/ipa/Payload/Runner.app   # after unzipping the .ipa
+```
+
+`-allowProvisioningUpdates` plus an Admin key is what creates the distribution
+certificate and the `iOS Team Store Provisioning Profile` the first time. The
+certificate is cloud-managed, so `security find-identity -v -p codesigning` will
+*not* list it — that command showing only `Apple Development` is expected and is
+not evidence that signing failed.
+
+Run `--validate-app` before `--upload-app`. Validation is free; an upload is not.
 
 Bump `version:` in `pubspec.yaml` before every upload. The part after `+` is the
 build number and **App Store Connect rejects a build number it has already seen**,
 permanently — a rejected upload still burns the number.
+
+## The app record cannot be created from the API
+
+`POST /v1/apps` returns 403: *"The resource 'apps' does not allow 'CREATE'.
+Allowed operations are: GET_COLLECTION, GET_INSTANCE, UPDATE"*. The record is
+made by hand once, at App Store Connect → Apps → +, and everything after that is
+scriptable. The App ID it needs in the dropdown *is* API-creatable, via
+`POST /v1/bundleIds`.
+
+| | |
+| --- | --- |
+| App Store Connect app id | `6804213838` |
+| App ID (bundle id resource) | `7FGR48F95L` |
+| SKU | `adhkar-ios-001` |
 
 ## Privacy
 
