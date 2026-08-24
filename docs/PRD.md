@@ -173,6 +173,14 @@ The top-level taxonomy. Each is a door on the home screen.
 * **F4.6** A counter can be reset, and a chapter can be started over.
 * **F4.7** A **free counter** (*tasbih*), not attached to any dhikr, for a person
   counting something the app does not know about.
+* **F4.8** A count can be **left after one reading**. A hundred-times dhikr is a
+  hundred taps, and a person who has read the words once and is not going to say
+  them a hundred times this morning otherwise has two options: tap out
+  repetitions they did not say, or abandon the sitting. The third way is a quiet
+  control under the count — never the loud one, which stays the counter itself —
+  and it is named *read once*, not *done*. The number the book transmits is not
+  lowered, hidden or adjusted by it; the app records that the reader moved on,
+  and claims nothing about repetitions that were not said.
 
 ### F5 — Progress, honestly
 
