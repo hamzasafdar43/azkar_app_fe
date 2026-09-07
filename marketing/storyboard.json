@@ -1,0 +1,59 @@
+{
+  "width": 1080,
+  "height": 1920,
+  "fps": 30,
+  "audio": "bed.wav",
+  "fadeIn": 0.7,
+  "fadeOut": 1.2,
+  "scenes": [
+    { "kind": "title", "theme": "light", "dur": 3.2, "xfade": 0.0,
+      "mark": true },
+
+    { "kind": "title", "theme": "light", "dur": 3.4,
+      "title": "Sakinah", "arabic": "سَكِينَة",
+      "sub": "the tranquillity God sends down" },
+
+    { "kind": "title", "theme": "light", "dur": 3.4,
+      "title": "A pocket book\nof the Muslim",
+      "sub": "327 supplications · seven collections\nevery one carrying its source" },
+
+    { "kind": "shot", "theme": "light", "dur": 4.0, "image": "shots/01-home.png",
+      "caption": "Morning and evening,\nwaiting where you left them." },
+
+    { "kind": "title", "theme": "dark", "dur": 3.2,
+      "title": "Only have\na minute?",
+      "sub": "Say how long you have.\nThe sitting is sized to fit." },
+
+    { "kind": "shot", "theme": "dark", "dur": 4.2, "image": "shots/13-budget-dark.png",
+      "caption": "One minute, five, ten —\nor the book as it stands." },
+
+    { "kind": "shot", "theme": "dark", "dur": 4.0, "image": "shots/14-reader-dark-1min.png",
+      "caption": "And a short sitting is never\none pretending to be whole." },
+
+    { "kind": "shot", "theme": "light", "dur": 1.8, "image": "shots/06-count3.png",
+      "pan": 0, "caption": "Count with your thumb.\nNothing else on the page moves." },
+    { "kind": "shot", "theme": "light", "dur": 1.3, "xfade": 0.22, "image": "shots/07-count2.png",
+      "pan": 0, "caption": "Count with your thumb.\nNothing else on the page moves." },
+    { "kind": "shot", "theme": "light", "dur": 2.2, "xfade": 0.22, "image": "shots/08-count1.png",
+      "pan": 0, "caption": "Count with your thumb.\nNothing else on the page moves." },
+
+    { "kind": "shot", "theme": "light", "dur": 4.2, "image": "shots/04-source.png",
+      "caption": "Every supplication carries\nits source. Without exception." },
+
+    { "kind": "shot", "theme": "light", "dur": 3.6, "image": "shots/05-ayah.png",
+      "caption": "Fully vowelled.\nNever edited." },
+
+    { "kind": "shot", "theme": "light", "dur": 3.8, "image": "shots/09-search.png",
+      "caption": "Find the du'ā for the\nmoment you are actually in." },
+
+    { "kind": "shot", "theme": "light", "dur": 3.6, "image": "shots/10-collections.png",
+      "caption": "Seven collections.\n151 chapters." },
+
+    { "kind": "shot", "theme": "light", "dur": 3.4, "image": "shots/11-settings.png",
+      "caption": "Nothing you do here\nleaves your device." },
+
+    { "kind": "title", "theme": "light", "dur": 4.6,
+      "mark": true, "title": "Sakinah",
+      "sub": "Free · offline · no account needed" }
+  ]
+}
