@@ -73,7 +73,9 @@ struct Palette {
 // MARK: - Text
 
 let arabicFontLoaded: Bool = {
-    let url = URL(fileURLWithPath: "../assets/fonts/Amiri-Regular.ttf")
+    // The Flutter app ships the Amiri face; marketing/ now lives in
+    // adhkar_docs, one level up and beside adhkar_app_flutter.
+    let url = URL(fileURLWithPath: "../../adhkar_app_flutter/assets/fonts/Amiri-Regular.ttf")
     return CTFontManagerRegisterFontsForURL(url as CFURL, .process, nil)
 }()
 
@@ -146,7 +148,7 @@ func loadImage(_ path: String) -> CGImage? {
     return cg
 }
 
-let iconPath = "../ios/Runner/Assets.xcassets/AppIcon.appiconset/Tasbih-1024.png"
+let iconPath = "../../adhkar_app_flutter/ios/Runner/Assets.xcassets/AppIcon.appiconset/Tasbih-1024.png"
 
 // MARK: - Scene drawing
 
