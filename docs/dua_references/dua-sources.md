@@ -15,7 +15,7 @@ Grouped by the seven collections and their 151 chapters.
 | _Hisn al-Muslim ch. N_ | reference is the book itself, not a numbered hadith. Look up the underlying hadith at [hisnmuslim.com](https://www.hisnmuslim.com/) or in a printed Hisn — a reviewer can then add a sunnah.com URL |
 | **· needs check** | citation could not be resolved automatically; raw text printed below |
 
-Regenerate with `python3 docs/build_dua_sources.py` whenever the snapshot changes.
+Regenerate with `python3 docs/dua_references/build_dua_sources.py` whenever the snapshot changes.
 
 ## Contents
 

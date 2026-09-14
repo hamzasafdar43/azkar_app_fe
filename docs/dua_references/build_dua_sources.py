@@ -6,7 +6,7 @@ sunnah.com / quran.com URL where the citation string is specific enough
 to form one automatically.
 
 Usage:
-    python3 docs/build_dua_sources.py
+    python3 docs/dua_references/build_dua_sources.py
 
 The snapshot lives in a sibling repo:
     ../adhkar_api/content/snapshot.json
@@ -200,7 +200,7 @@ def build(snapshot_path: pathlib.Path, hisn_dir: pathlib.Path,
     push("| **[Qur'an s:a](https://quran.com)** | Qur'an verse resolved from the surah/āyah |\n")
     push("| _Hisn al-Muslim ch. N_ | reference is the book itself, not a numbered hadith. Look up the underlying hadith at [hisnmuslim.com](https://www.hisnmuslim.com/) or in a printed Hisn — a reviewer can then add a sunnah.com URL |\n")
     push("| **· needs check** | citation could not be resolved automatically; raw text printed below |\n\n")
-    push("Regenerate with `python3 docs/build_dua_sources.py` whenever the snapshot changes.\n\n")
+    push("Regenerate with `python3 docs/dua_references/build_dua_sources.py` whenever the snapshot changes.\n\n")
 
     push("## Contents\n\n")
     for c in snap["collections"]:
@@ -275,13 +275,13 @@ def build(snapshot_path: pathlib.Path, hisn_dir: pathlib.Path,
 
 
 if __name__ == "__main__":
-    here = pathlib.Path(__file__).resolve().parent
-    docs = here.parent
-    api_root = docs.parent / "adhkar_api"
+    here = pathlib.Path(__file__).resolve().parent  # docs/dua_references
+    project_root = here.parent.parent.parent        # AdhkarApp
+    api_root = project_root / "adhkar_api"
     stats = build(
         snapshot_path=api_root / "content" / "snapshot.json",
         hisn_dir=api_root / "content" / "sources" / "hisn" / "en",
-        out_path=docs / "docs" / "dua-sources.md",
+        out_path=here / "dua-sources.md",
     )
     print("dua-sources.md written · " +
           " · ".join(f"{k}: {v}" for k, v in stats.items()))
