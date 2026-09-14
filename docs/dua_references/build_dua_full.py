@@ -1,9 +1,8 @@
 """Regenerate `dua-full.md` from the app's content snapshot.
 
-Companion to `build_dua_sources.py`. Same grouping (collection × chapter,
-same ordering) but prints every field the app has for each supplication:
-Arabic, transliteration, translation, virtue, reference, repeat, attribution,
-audio URL when present.
+Collection × chapter grouping, same ordering as `dua-hisn-urls.md`, but prints
+every field the app has for each supplication: Arabic, transliteration,
+translation, virtue, reference, repeat, attribution, audio URL when present.
 
 Usage:
     python3 docs/dua_references/build_dua_full.py
@@ -53,7 +52,7 @@ def build(snapshot_path: pathlib.Path, out_path: pathlib.Path) -> dict:
     push("# Adhkar — full du'a text (as bundled in the app)\n\n")
     push("Every supplication from `adhkar_app_flutter/assets/content/snapshot.json`\n")
     push("in full: Arabic, transliteration, translation, virtue, reference.\n")
-    push("Same collection × chapter grouping as `dua-sources.md`.\n\n")
+    push("Same collection × chapter grouping as `dua-hisn-urls.md`.\n\n")
     push(f"Snapshot: contentVersion `{snap.get('contentVersion')}` · "
          f"generated at `{snap.get('generatedAt')}`.\n\n")
     push("Regenerate with `python3 docs/dua_references/build_dua_full.py` whenever the "

@@ -3,8 +3,8 @@
 Thin wrapper — the *builder* is `adhkar_api/scripts/build_content.py`, and it is
 the only path that turns the authentic sources under `adhkar_api/content/` into
 a snapshot. This script invokes it, then copies its output next to the other
-review artefacts (`dua-full.md`, `dua-sources.md`, `dua-full.html`) so it can
-be inspected alongside them.
+review artefacts (`dua-full.md`, `dua-full.html`, `dua-hisn-urls.md`) so it
+can be inspected alongside them.
 
 The Flutter asset at `adhkar_app_flutter/assets/content/snapshot.json` is left
 untouched — bumping the bundled snapshot is a separate step (copy the API's

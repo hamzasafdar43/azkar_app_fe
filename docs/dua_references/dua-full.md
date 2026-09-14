@@ -2,7 +2,7 @@
 
 Every supplication from `adhkar_app_flutter/assets/content/snapshot.json`
 in full: Arabic, transliteration, translation, virtue, reference.
-Same collection × chapter grouping as `dua-sources.md`.
+Same collection × chapter grouping as `dua-hisn-urls.md`.
 
 Snapshot: contentVersion `2` · generated at `2026-09-12T13:00:21+00:00`.
 

@@ -11,7 +11,7 @@ Snapshot: contentVersion `2`. Feed: `adhkar_api/content/sources/hisn/ar/` (266 e
 **Two caveats before you review a NOT FOUND row.**
 
 * **Letter suffixes not resolved.** sunnah.com splits some printed hadiths into `hisn:75a`, `hisn:75b`, `hisn:75c`. The local feed carries one row per printed ID, so the `a`/`b`/`c` variants can only be added by a human check. Where a `hisn:<N>` URL is produced below, the correct final URL may be `hisn:<N>a`.
-* **Some supplications do not come from Hisn al-Muslim.** Prophets' du'as get a `quran.com` URL from their surah/ayah reference; the 14 Seerah/Companions entries come from other hadith books and have no `hisn:` URL. A NOT FOUND for those is not a gap.
+* **Some supplications do not come from Hisn al-Muslim.** Prophets' du'as get a `quran.com` URL from their surah/ayah reference; Seerah/Companions entries come from other hadith books and get a manual `sunnah.com/<collection>:<N>` (or `/urn/<N>`) URL from the `OVERRIDES` map at the top of this script. Anything still NOT FOUND below is in the 'To find later' table at the end of the file.
 * **Ambiguous placement.** Some du'as appear in more than one Hisn chapter — the three Quls sit in `hisn:70` (after prayer) and `hisn:76` (morning/evening) both. The matcher picks one; either URL opens the right recitation, but the chapter context on the page may not match the app's chapter.
 
 Regenerate with `python3 docs/dua_references/build_hisn_urls.py`.
@@ -24,7 +24,7 @@ Regenerate with `python3 docs/dua_references/build_hisn_urls.py`.
 
 | # | Slug | Arabic (snip) | Reference |
 |---:|---|---|---|
-| 1 | `adhkar-1` | <span dir="rtl">الْحَمْدُ لِلَّهِ وَحْدَهُ، وَالصَّلاَةُ وَالسَّلاَمُ عَلَى…</span> | **NOT FOUND** (Anas (RA) said that he heard the Prophet (ﷺ) say: "That I sit with people remembering Almighty Allah from the morning (Fajr) prayer until s…) |
+| 1 | `adhkar-1` | <span dir="rtl">الْحَمْدُ لِلَّهِ وَحْدَهُ، وَالصَّلاَةُ وَالسَّلاَمُ عَلَى…</span> | [hisn:75a](https://sunnah.com/hisn:75a) |
 | 2 | `adhkar-2` | <span dir="rtl">أَعُوذُ بِاللَّهِ مِنَ الشَّيطَانِ الرَّجِيمِ ﴿اللَّهُ لاَ…</span> | [hisn:75](https://sunnah.com/hisn:75) |
 | 3 | `adhkar-4` | <span dir="rtl">قُلْ هُوَ ٱللَّهُ أَحَدٌ، ٱللَّهُ ٱلصَّمَدُ، لَمْ يَلِدْ وَ…</span> | [hisn:76](https://sunnah.com/hisn:76) |
 | 4 | `adhkar-5` | <span dir="rtl">قُلْ أَعُوذُ بِرَبِّ ٱلْفَلَقِ، مِن شَرِّ مَا خَلَقَ، وَمِن…</span> | [hisn:70](https://sunnah.com/hisn:70) |
@@ -55,14 +55,14 @@ Regenerate with `python3 docs/dua_references/build_hisn_urls.py`.
 
 | # | Slug | Arabic (snip) | Reference |
 |---:|---|---|---|
-| 1 | `adhkar-1` | <span dir="rtl">الْحَمْدُ لِلَّهِ وَحْدَهُ، وَالصَّلاَةُ وَالسَّلاَمُ عَلَى…</span> | **NOT FOUND** (Anas (RA) said that he heard the Prophet (ﷺ) say: "That I sit with people remembering Almighty Allah from the morning (Fajr) prayer until s…) |
+| 1 | `adhkar-1` | <span dir="rtl">الْحَمْدُ لِلَّهِ وَحْدَهُ، وَالصَّلاَةُ وَالسَّلاَمُ عَلَى…</span> | [hisn:75a](https://sunnah.com/hisn:75a) |
 | 2 | `adhkar-2` | <span dir="rtl">أَعُوذُ بِاللَّهِ مِنَ الشَّيطَانِ الرَّجِيمِ ﴿اللَّهُ لاَ…</span> | [hisn:75](https://sunnah.com/hisn:75) |
 | 3 | `adhkar-3` | <span dir="rtl">أَعُوذُ بِاللَّهِ مِنَ الشَّيطَانِ الرَّجِيمِ ﴿آمَنَ الرَّس…</span> | [hisn:101](https://sunnah.com/hisn:101) |
 | 4 | `adhkar-4` | <span dir="rtl">قُلْ هُوَ ٱللَّهُ أَحَدٌ، ٱللَّهُ ٱلصَّمَدُ، لَمْ يَلِدْ وَ…</span> | [hisn:76](https://sunnah.com/hisn:76) |
 | 5 | `adhkar-5` | <span dir="rtl">قُلْ أَعُوذُ بِرَبِّ ٱلْفَلَقِ، مِن شَرِّ مَا خَلَقَ، وَمِن…</span> | [hisn:70](https://sunnah.com/hisn:70) |
 | 6 | `adhkar-6` | <span dir="rtl">قُلْ أَعُوذُ بِرَبِّ ٱلنَّاسِ، مَلِكِ ٱلنَّاسِ، إِلَٰهِ ٱلن…</span> | [hisn:76](https://sunnah.com/hisn:76) |
 | 7 | `adhkar-8` | <span dir="rtl">أمسينا وأمسى الملك للَّه، وَالْحَمْدُ لِلَّهِ، لاَ إِلَهَ إ…</span> | [hisn:77](https://sunnah.com/hisn:77) |
-| 8 | `adhkar-10` | <span dir="rtl">اللَّهمَّ بِكَ أمسَينا وبِكَ أصبَحنا وبِكَ نَحيا وبِكَ نموت…</span> | **NOT FOUND** (Al-Tirmidhi, 5/466, No. 3391, and see: Sahih Al-Tirmidhi 3/142.) |
+| 8 | `adhkar-10` | <span dir="rtl">اللَّهمَّ بِكَ أمسَينا وبِكَ أصبَحنا وبِكَ نَحيا وبِكَ نموت…</span> | [hisn:78](https://sunnah.com/hisn:78) |
 | 9 | `adhkar-11` | <span dir="rtl">اللَّهُمَّ أَنْتَ رَبِّي لَا إِلَهَ إِلاَّ أَنْتَ، خَلَقْتَ…</span> | [hisn:79](https://sunnah.com/hisn:79) |
 | 10 | `adhkar-13` | <span dir="rtl">اللَّهم إني أمسيت أُشْهِدُكَ، وَأُشْهِدُ حَمَلَةَ عَرْشِكَ،…</span> | [hisn:80](https://sunnah.com/hisn:80) |
 | 11 | `adhkar-15` | <span dir="rtl">اللَّهم ما أمسى بي مِنْ نِعْمَةٍ أَوْ بِأَحَدٍ مِنْ خَلْقِك…</span> | [hisn:81](https://sunnah.com/hisn:81) |
@@ -334,7 +334,7 @@ Regenerate with `python3 docs/dua_references/build_hisn_urls.py`.
 
 | # | Slug | Arabic (snip) | Reference |
 |---:|---|---|---|
-| 1 | `hisn-114` | <span dir="rtl">[ (يَنْفُثُ عَنْ يَسَارِهِ (ثلاثاً - (يَسْتَعِيذُ بِاللَّهِ…</span> | **NOT FOUND** (Hisn al-Muslim — After a bad dream) |
+| 1 | `hisn-114` | <span dir="rtl">[ (يَنْفُثُ عَنْ يَسَارِهِ (ثلاثاً - (يَسْتَعِيذُ بِاللَّهِ…</span> | [hisn:114](https://sunnah.com/hisn:114) |
 | 2 | `hisn-115` | <span dir="rtl">ويَقُومُ يُصَلِّي إِنْ أَرَادَ ذَلِكَ.</span> | [hisn:115](https://sunnah.com/hisn:115) |
 
 ### Congratulating new parents
@@ -847,15 +847,15 @@ Regenerate with `python3 docs/dua_references/build_hisn_urls.py`.
 
 | # | Slug | Arabic (snip) | Reference |
 |---:|---|---|---|
-| 1 | `dua-seerah-ighfir-li-qawmi` | <span dir="rtl">اللَّهُمَّ اغْفِرْ لِقَوْمِي فَإِنَّهُمْ لاَ يَعْلَمُونَ</span> | **NOT FOUND** (Sahih al-Bukhari 3477 (Book 60, no. 3331). Narrated by 'Abdullah ibn Mas'ud.) |
-| 2 | `dua-seerah-aizz-al-islam` | <span dir="rtl">اللَّهُمَّ أَعِزَّ الإِسْلاَمَ بِأَحَبِّ هَذَيْنِ الرَّجُلَ…</span> | **NOT FOUND** (Jami' at-Tirmidhi 3681 (no. 3774), narrated by Ibn 'Umar. Graded hasan sahih gharib by at-Tirmidhi.) |
-| 3 | `dua-seerah-ya-muqallib` | <span dir="rtl">يَا مُقَلِّبَ الْقُلُوبِ ثَبِّتْ قَلْبِي عَلَى دِينِكَ</span> | **NOT FOUND** (Jami' at-Tirmidhi 3522 (no. 3606), narrated by Umm Salamah. Graded hasan by at-Tirmidhi. Also narrated from Anas at no. 2208.) |
+| 1 | `dua-seerah-ighfir-li-qawmi` | <span dir="rtl">اللَّهُمَّ اغْفِرْ لِقَوْمِي فَإِنَّهُمْ لاَ يَعْلَمُونَ</span> | [bukhari:3477](https://sunnah.com/bukhari:3477) |
+| 2 | `dua-seerah-aizz-al-islam` | <span dir="rtl">اللَّهُمَّ أَعِزَّ الإِسْلاَمَ بِأَحَبِّ هَذَيْنِ الرَّجُلَ…</span> | [tirmidhi:3681](https://sunnah.com/tirmidhi:3681) |
+| 3 | `dua-seerah-ya-muqallib` | <span dir="rtl">يَا مُقَلِّبَ الْقُلُوبِ ثَبِّتْ قَلْبِي عَلَى دِينِكَ</span> | [urn:8437155](https://sunnah.com/urn/8437155) |
 
 ### Badr
 
 | # | Slug | Arabic (snip) | Reference |
 |---:|---|---|---|
-| 1 | `dua-seerah-badr` | <span dir="rtl">اللَّهُمَّ أَنْجِزْ لِي مَا وَعَدْتَنِي اللَّهُمَّ آتِ مَا…</span> | **NOT FOUND** (Sahih Muslim 1763 (no. 4456), narrated by 'Umar ibn al-Khattab.) |
+| 1 | `dua-seerah-badr` | <span dir="rtl">اللَّهُمَّ أَنْجِزْ لِي مَا وَعَدْتَنِي اللَّهُمَّ آتِ مَا…</span> | [urn:7545020](https://sunnah.com/urn/7545020) |
 
 ### Madinah
 
@@ -867,7 +867,7 @@ Regenerate with `python3 docs/dua_references/build_hisn_urls.py`.
 
 | # | Slug | Arabic (snip) | Reference |
 |---:|---|---|---|
-| 1 | `dua-seerah-ibrahim` | <span dir="rtl">إِنَّ الْعَيْنَ تَدْمَعُ، وَالْقَلْبَ يَحْزَنُ، وَلاَ نَقُو…</span> | **NOT FOUND** (Sahih al-Bukhari 1303 (no. 1261), narrated by Anas ibn Malik.) |
+| 1 | `dua-seerah-ibrahim` | <span dir="rtl">إِنَّ الْعَيْنَ تَدْمَعُ، وَالْقَلْبَ يَحْزَنُ، وَلاَ نَقُو…</span> | [mishkat:1722](https://sunnah.com/mishkat:1722) |
 
 ---
 
@@ -1144,17 +1144,31 @@ Regenerate with `python3 docs/dua_references/build_hisn_urls.py`.
 
 ---
 
+## To find later
+
+7 dhikr(s) still need a URL. Full Arabic is included so you can paste it into sunnah.com's search. Send URLs back and add them to the `OVERRIDES` map at the top of `build_hisn_urls.py`, then rerun this script.
+
+| Collection | Chapter | Slug | Arabic | Reference |
+|---|---|---|---|---|
+| Prayers from the Seerah | Madinah | `dua-seerah-madinah` | <span dir="rtl">اللَّهُمَّ حَبِّبْ إِلَيْنَا الْمَدِينَةَ كَحُبِّنَا مَكَّةَ أَوْ أَشَدَّ، اللَّهُمَّ بَارِكْ لَنَا فِي صَاعِنَا، وَفِي مُدِّنَا، وَصَحِّحْهَا لَنَا وَانْقُلْ حُمَّاهَا إِلَى الْجُحْفَةِ</span> | Sahih al-Bukhari 1889 (no. 1821), narrated by 'A'ishah. |
+| Prayers of the Companions | Taught to one of them | `dua-aishah-laylat-al-qadr` | <span dir="rtl">اللَّهُمَّ إِنَّكَ عَفُوٌّ تُحِبُّ الْعَفْوَ فَاعْفُ عَنِّي</span> | Sunan Ibn Majah 3850 (no. 3586); also Jami' at-Tirmidhi 3513. Narrated by 'A'ishah. Graded sahih by al-Albani. |
+| Prayers of the Companions | Taught to one of them | `dua-ali-ihdini` | <span dir="rtl">اللَّهُمَّ اهْدِنِي وَسَدِّدْنِي</span> | Sunan an-Nasa'i 5221; also Sahih Muslim 2725 and Sunan Abi Dawud 4226. Narrated by 'Ali ibn Abi Talib. |
+| Prayers of the Companions | Taught to one of them | `dua-ibn-masud-al-huda` | <span dir="rtl">اللَّهُمَّ إِنِّي أَسْأَلُكَ الْهُدَى وَالتُّقَى وَالْعَفَافَ وَالْغِنَى</span> | Jami' at-Tirmidhi 3489 (no. 3573); also Sahih Muslim 2721. Narrated by 'Abdullah ibn Mas'ud. Graded hasan sahih by at-Tirmidhi. |
+| Prayers of the Companions | Prayers he made for them | `dua-anas-akthir-malahu` | <span dir="rtl">اللَّهُمَّ أَكْثِرْ مَالَهُ وَوَلَدَهُ وَبَارِكْ لَهُ فِيمَا أَعْطَيْتَهُ</span> | Jami' at-Tirmidhi 3833 (no. 3926); also Sahih Muslim 2480 and 660. Narrated by Anas ibn Malik from Umm Sulaym. Graded hasan sahih by at-Tir… |
+| Prayers of the Companions | Prayers he made for them | `dua-ibn-abbas-faqqihhu` | <span dir="rtl">اللَّهُمَّ فَقِّهْهُ فِي الدِّينِ</span> | Sahih al-Bukhari 143, narrated by Ibn 'Abbas. |
+| Prayers of the Companions | Said by one of them | `dua-umar-istisqa` | <span dir="rtl">اللَّهُمَّ إِنَّا كُنَّا نَتَوَسَّلُ إِلَيْكَ بِنَبِيِّنَا فَتَسْقِينَا وَإِنَّا نَتَوَسَّلُ إِلَيْكَ بِعَمِّ نَبِيِّنَا فَاسْقِنَا</span> | Sahih al-Bukhari 1010 (no. 982), narrated by Anas ibn Malik. |
+
 ## Coverage
 
 | Collection | Matched | Total | % |
 |---|---:|---:|---:|
-| Morning & Evening | 47 | 50 | 94% |
+| Morning & Evening | 50 | 50 | 100% |
 | In the Prayer | 56 | 56 | 100% |
-| Through the Day | 129 | 130 | 99% |
+| Through the Day | 130 | 130 | 100% |
 | Prayers of the Prophets | 36 | 36 | 100% |
-| Prayers from the Seerah | 0 | 6 | 0% |
+| Prayers from the Seerah | 5 | 6 | 83% |
 | Prayers of the Companions | 2 | 8 | 25% |
 | When You Need It | 57 | 57 | 100% |
-| **All** | **327** | **343** | **95%** |
+| **All** | **336** | **343** | **98%** |
 
-Of the 327 matched: 291 to `sunnah.com/hisn:N`, 36 to `quran.com/S/A`.
+Of the 336 matched: 291 to `sunnah.com/hisn:N`, 36 to `quran.com/S/A`, 9 from the manual `OVERRIDES` map.

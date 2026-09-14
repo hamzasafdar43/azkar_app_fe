@@ -19,13 +19,64 @@ Usage:  python3 docs/dua_references/build_hisn_urls.py
 """
 
 from __future__ import annotations
-import json, pathlib, re, sys, unicodedata
+import json, pathlib, re, unicodedata
 from collections import defaultdict
 from difflib import SequenceMatcher
 
-# Reuse the surah-name → number map from the sibling script.
-sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
-from build_dua_sources import SURAH  # noqa: E402
+
+# Surah name → number, for parsing English references like
+# "Surat Al-Baqarah 2:255" or "Surah Al-Baqarah, Verse 255".
+SURAH = {
+    "al-fatihah": 1, "al-baqarah": 2, "al-baqara": 2, "ali imran": 3,
+    "aali imran": 3, "al-i imran": 3, "an-nisa": 4, "an-nisa'": 4,
+    "al-ma'idah": 5, "al-maidah": 5, "al-an'am": 6, "al-anam": 6,
+    "al-a'raf": 7, "al-araf": 7, "al-anfal": 8, "at-tawbah": 9,
+    "yunus": 10, "hud": 11, "yusuf": 12, "ar-ra'd": 13, "ibrahim": 14,
+    "al-hijr": 15, "an-nahl": 16, "al-isra": 17, "al-isra'": 17,
+    "al-kahf": 18, "maryam": 19, "ta-ha": 20, "al-anbiya": 21,
+    "al-anbiya'": 21, "al-hajj": 22, "al-mu'minun": 23, "al-muminun": 23,
+    "an-nur": 24, "al-furqan": 25, "ash-shu'ara": 26, "ash-shuara": 26,
+    "an-naml": 27, "al-qasas": 28, "al-ankabut": 29, "ar-rum": 30,
+    "luqman": 31, "as-sajdah": 32, "al-ahzab": 33, "saba": 34, "saba'": 34,
+    "fatir": 35, "ya-sin": 36, "yaseen": 36, "yasin": 36, "as-saffat": 37,
+    "sad": 38, "az-zumar": 39, "ghafir": 40, "fussilat": 41, "ash-shura": 42,
+    "az-zukhruf": 43, "ad-dukhan": 44, "al-jathiyah": 45, "al-ahqaf": 46,
+    "muhammad": 47, "al-fath": 48, "al-hujurat": 49, "qaf": 50,
+    "adh-dhariyat": 51, "at-tur": 52, "an-najm": 53, "al-qamar": 54,
+    "ar-rahman": 55, "al-waqi'ah": 56, "al-hadid": 57, "al-mujadilah": 58,
+    "al-hashr": 59, "al-mumtahanah": 60, "as-saff": 61, "al-jumu'ah": 62,
+    "al-munafiqun": 63, "at-taghabun": 64, "at-talaq": 65, "at-tahrim": 66,
+    "al-mulk": 67, "al-qalam": 68, "al-haqqah": 69, "al-ma'arij": 70,
+    "nuh": 71, "al-jinn": 72, "al-muzzammil": 73, "al-muddaththir": 74,
+    "al-qiyamah": 75, "al-insan": 76, "al-mursalat": 77, "an-naba": 78,
+    "an-nazi'at": 79, "'abasa": 80, "abasa": 80, "at-takwir": 81,
+    "al-infitar": 82, "al-mutaffifin": 83, "al-inshiqaq": 84, "al-buruj": 85,
+    "at-tariq": 86, "al-a'la": 87, "al-ala": 87, "al-ghashiyah": 88,
+    "al-fajr": 89, "al-balad": 90, "ash-shams": 91, "al-layl": 92,
+    "ad-duha": 93, "ash-sharh": 94, "at-tin": 95, "al-alaq": 96,
+    "al-'alaq": 96, "al-qadr": 97, "al-bayyinah": 98, "az-zalzalah": 99,
+    "al-adiyat": 100, "al-qari'ah": 101, "at-takathur": 102, "al-asr": 103,
+    "al-humazah": 104, "al-fil": 105, "quraysh": 106, "al-ma'un": 107,
+    "al-kawthar": 108, "al-kafirun": 109, "an-nasr": 110, "al-masad": 111,
+    "al-lahab": 111, "al-ikhlas": 112, "al-falaq": 113, "an-nas": 114,
+}
+
+
+# Manual URL overrides for dhikrs the auto-matcher cannot reach: the Seerah
+# and Companions du'as (not in the Hisn feed at all), and a few Hisn entries
+# whose local-feed row disagrees with the printed sunnah.com hadith badly
+# enough that the fuzzy match fails. Slug → (label, URL). These win over
+# both the quran/hisn branches, so they are authoritative when set.
+OVERRIDES: dict[str, tuple[str, str]] = {
+    "adhkar-1":                    ("hisn:75a",     "https://sunnah.com/hisn:75a"),
+    "adhkar-10":                   ("hisn:78",      "https://sunnah.com/hisn:78"),
+    "hisn-114":                    ("hisn:114",     "https://sunnah.com/hisn:114"),
+    "dua-seerah-ighfir-li-qawmi":  ("bukhari:3477", "https://sunnah.com/bukhari:3477"),
+    "dua-seerah-aizz-al-islam":    ("tirmidhi:3681","https://sunnah.com/tirmidhi:3681"),
+    "dua-seerah-ya-muqallib":      ("urn:8437155",  "https://sunnah.com/urn/8437155"),
+    "dua-seerah-badr":             ("urn:7545020",  "https://sunnah.com/urn/7545020"),
+    "dua-seerah-ibrahim":          ("mishkat:1722", "https://sunnah.com/mishkat:1722"),
+}
 
 
 # "Surat Al-Baqarah 2:255", "Surah Al-Baqarah, Verse 255", or bare "2:255-257".
@@ -270,9 +321,11 @@ def build(snapshot_path: pathlib.Path, hisn_ar_dir: pathlib.Path,
          "be added by a human check. Where a `hisn:<N>` URL is produced below, "
          "the correct final URL may be `hisn:<N>a`.\n")
     push("* **Some supplications do not come from Hisn al-Muslim.** Prophets' "
-         "du'as get a `quran.com` URL from their surah/ayah reference; the 14 "
-         "Seerah/Companions entries come from other hadith books and have no "
-         "`hisn:` URL. A NOT FOUND for those is not a gap.\n")
+         "du'as get a `quran.com` URL from their surah/ayah reference; "
+         "Seerah/Companions entries come from other hadith books and get a "
+         "manual `sunnah.com/<collection>:<N>` (or `/urn/<N>`) URL from the "
+         "`OVERRIDES` map at the top of this script. Anything still NOT FOUND "
+         "below is in the 'To find later' table at the end of the file.\n")
     push("* **Ambiguous placement.** Some du'as appear in more than one Hisn "
          "chapter — the three Quls sit in `hisn:70` (after prayer) and "
          "`hisn:76` (morning/evening) both. The matcher picks one; either URL "
@@ -280,8 +333,11 @@ def build(snapshot_path: pathlib.Path, hisn_ar_dir: pathlib.Path,
          "may not match the app's chapter.\n\n")
     push("Regenerate with `python3 docs/dua_references/build_hisn_urls.py`.\n\n---\n\n")
 
-    total = matched_hisn = matched_quran = not_found = 0
+    total = matched_hisn = matched_quran = matched_override = not_found = 0
     per_collection = defaultdict(lambda: [0, 0])  # [matched, total]
+    # Backlog: (collection_en, chapter_en, slug, arabic_full, reference_en)
+    backlog: list[tuple[str, str, str, str, str]] = []
+    seen_backlog: set[str] = set()
 
     for coll in snap["collections"]:
         push(f"## {coll['title']['en']}\n\n")
@@ -303,7 +359,14 @@ def build(snapshot_path: pathlib.Path, hisn_ar_dir: pathlib.Path,
                 ref_en = (d.get("reference") or {}).get("en") \
                          or (d.get("reference") or {}).get("ar") or ""
                 cell = None
-                if d.get("attributionKind") == "quran":
+                # 1) manual override wins over everything else.
+                ov = OVERRIDES.get(d["slug"])
+                if ov:
+                    matched_override += 1
+                    per_collection[coll["title"]["en"]][0] += 1
+                    label, url = ov
+                    cell = f"[{label}]({url})"
+                if cell is None and d.get("attributionKind") == "quran":
                     q_url, q_label = quran_url(ref_en)
                     if q_url:
                         matched_quran += 1
@@ -320,26 +383,50 @@ def build(snapshot_path: pathlib.Path, hisn_ar_dir: pathlib.Path,
                     else:
                         not_found += 1
                         cell = f"**NOT FOUND** ({snip(ref_en, 140)})"
+                        if d["slug"] not in seen_backlog:
+                            seen_backlog.add(d["slug"])
+                            backlog.append((
+                                coll["title"]["en"], ch["title"]["en"],
+                                d["slug"], d.get("arabic", ""), ref_en,
+                            ))
                 push(f"| {entry['order']} | `{d['slug']}` "
                      f"| <span dir=\"rtl\">{snip(d.get('arabic',''), 60)}</span> "
                      f"| {cell} |\n")
             push("\n")
         push("---\n\n")
 
+    push("## To find later\n\n")
+    if not backlog:
+        push("None — every dhikr has a URL.\n\n")
+    else:
+        push(f"{len(backlog)} dhikr(s) still need a URL. Full Arabic is "
+             f"included so you can paste it into sunnah.com's search. Send "
+             f"URLs back and add them to the `OVERRIDES` map at the top of "
+             f"`build_hisn_urls.py`, then rerun this script.\n\n")
+        push("| Collection | Chapter | Slug | Arabic | Reference |\n"
+             "|---|---|---|---|---|\n")
+        for coll_en, ch_en, slug, ar, ref in backlog:
+            ar_cell = (ar or "").replace("\n", " ").replace("|", "\\|").strip()
+            ref_cell = snip(ref, 140)
+            push(f"| {coll_en} | {ch_en} | `{slug}` "
+                 f"| <span dir=\"rtl\">{ar_cell}</span> | {ref_cell} |\n")
+        push("\n")
+
     push("## Coverage\n\n")
     push("| Collection | Matched | Total | % |\n|---|---:|---:|---:|\n")
     for name, (mm, tt) in per_collection.items():
         pct = f"{100*mm/tt:.0f}%" if tt else "-"
         push(f"| {name} | {mm} | {tt} | {pct} |\n")
-    matched = matched_hisn + matched_quran
+    matched = matched_hisn + matched_quran + matched_override
     pct_all = f"{100*matched/total:.0f}%" if total else "-"
     push(f"| **All** | **{matched}** | **{total}** | **{pct_all}** |\n\n")
     push(f"Of the {matched} matched: {matched_hisn} to `sunnah.com/hisn:N`, "
-         f"{matched_quran} to `quran.com/S/A`.\n")
+         f"{matched_quran} to `quran.com/S/A`, {matched_override} from the "
+         f"manual `OVERRIDES` map.\n")
 
     out_path.write_text("".join(out))
     return {"rows": total, "hisn": matched_hisn, "quran": matched_quran,
-            "not_found": not_found}
+            "override": matched_override, "not_found": not_found}
 
 
 if __name__ == "__main__":
