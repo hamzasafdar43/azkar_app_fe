@@ -2,7 +2,3 @@
 
 # App Store Connect API private keys — never commit
 *.p8
-
-# Source recordings the audio editor pulled down to trim locally —
-# large, re-fetchable from hisnmuslim.com, not the useful artefact.
-adhkar-audio-editor/input/
