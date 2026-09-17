@@ -1,0 +1,802 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Adhkar Audio Editor</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lamejs/1.2.0/lame.min.js"></script>
+<style>
+  * { box-sizing: border-box; }
+  body { font-family: -apple-system, system-ui, sans-serif; margin: 0; background: #0f0f10; color: #e8e8ea; }
+  header { padding: 12px 16px; border-bottom: 1px solid #2a2a2e; display: flex; align-items: center; gap: 12px; }
+  h1 { font-size: 15px; margin: 0; font-weight: 600; }
+  .badge { font-size: 11px; padding: 3px 8px; border-radius: 4px; background: #1e293b; color: #93c5fd; }
+  .container { display: grid; grid-template-columns: 320px 1fr; height: calc(100vh - 49px); }
+  .sidebar { border-right: 1px solid #2a2a2e; overflow-y: auto; padding: 12px; }
+  .editor { padding: 16px; overflow-y: auto; }
+  .file-item { padding: 8px 10px; margin-bottom: 3px; cursor: pointer; border-radius: 6px; display: flex; align-items: center; gap: 8px; }
+  .file-item:hover { background: #1a1a1c; }
+  .file-item.active { background: #1e40af; }
+  .file-id { font-family: ui-monospace, SF Mono, monospace; font-size: 11px; opacity: 0.8; min-width: 42px; }
+  .file-name { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 12px; direction: ltr; }
+  .file-count { font-size: 10px; opacity: 0.7; background: #333; padding: 2px 6px; border-radius: 10px; }
+  #waveform-container { position: relative; background: #18181b; border-radius: 8px; padding: 12px; margin-bottom: 12px; }
+  canvas { display: block; width: 100%; height: 180px; cursor: crosshair; border-radius: 4px; }
+  .controls { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; margin-bottom: 12px; }
+  button { padding: 7px 12px; border: 1px solid #3a3a3e; background: #1a1a1c; color: #e8e8ea; border-radius: 6px; cursor: pointer; font-size: 12px; font-family: inherit; }
+  button:hover { background: #2a2a2e; }
+  button.primary { background: #2563eb; border-color: #2563eb; color: white; }
+  button.primary:hover { background: #1d4ed8; }
+  button.danger { color: #f87171; }
+  button:disabled { opacity: 0.4; cursor: not-allowed; }
+  input[type="text"], input[type="number"], select { padding: 6px 10px; border: 1px solid #3a3a3e; background: #18181b; color: #e8e8ea; border-radius: 6px; font-size: 12px; font-family: inherit; }
+  .time { font-family: ui-monospace, SF Mono, monospace; font-size: 11px; opacity: 0.8; }
+  .save-panel { background: #18181b; border-radius: 8px; padding: 12px; }
+  .save-row { display: flex; gap: 8px; align-items: center; margin-bottom: 8px; }
+  .save-row:last-child { margin-bottom: 0; }
+  label { font-size: 11px; opacity: 0.75; min-width: 70px; }
+  .segments { margin-top: 16px; }
+  .segments-title { font-size: 11px; opacity: 0.7; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; }
+  .segment-item { padding: 6px 10px; background: #18181b; border-radius: 6px; margin-bottom: 3px; display: flex; gap: 8px; align-items: center; font-size: 11px; }
+  .segment-item .name { flex: 1; font-family: ui-monospace, monospace; }
+  .empty { text-align: center; opacity: 0.5; padding: 60px 20px; font-size: 13px; }
+  .hint { font-size: 11px; opacity: 0.5; margin-top: 4px; }
+  .shortcuts { font-size: 10px; opacity: 0.5; margin-top: 12px; font-family: ui-monospace, monospace; }
+  kbd { padding: 1px 5px; background: #2a2a2e; border-radius: 3px; font-family: ui-monospace, monospace; font-size: 10px; border: 1px solid #444; }
+  .toast { position: fixed; bottom: 20px; right: 20px; padding: 10px 16px; background: #059669; color: white; border-radius: 6px; font-size: 13px; opacity: 0; transition: opacity 0.2s; z-index: 100; }
+  .toast.show { opacity: 1; }
+  .toast.error { background: #dc2626; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Adhkar Audio Editor</h1>
+  <span class="badge" id="output-mode">Output: Downloads</span>
+  <div style="flex:1"></div>
+  <button id="pick-output">Set output folder</button>
+</header>
+<div class="container">
+  <aside class="sidebar">
+    <button id="load-files" class="primary" style="width:100%; margin-bottom:10px;">Load audio files</button>
+    <input type="file" id="file-input" multiple accept="audio/*" hidden>
+    <div id="file-list"></div>
+    <div class="shortcuts">
+      <div style="margin-bottom:4px;">Shortcuts:</div>
+      <div><kbd>Space</kbd> play/pause region</div>
+      <div><kbd>[</kbd> set start to playhead</div>
+      <div><kbd>]</kbd> set end to playhead</div>
+      <div><kbd>S</kbd> save segment</div>
+      <div><kbd>⌘Z</kbd> undo · <kbd>⌘⇧Z</kbd> redo</div>
+    </div>
+  </aside>
+  <main class="editor">
+    <div id="empty-state" class="empty">Load audio files to begin.<br><br>Drag on the waveform to select a region — trim out "قل X مرة" intros and split day / night.</div>
+    <div id="editor-content" hidden>
+      <div style="margin-bottom: 10px; display: flex; align-items: baseline; gap: 8px;">
+        <span id="current-id" class="file-id" style="font-size:12px;"></span>
+        <span id="current-name" style="font-weight: 600; font-size: 13px;"></span>
+        <span class="time" id="total-dur" style="margin-left:auto"></span>
+      </div>
+      <div id="waveform-container">
+        <canvas id="waveform"></canvas>
+      </div>
+      <div class="controls">
+        <button id="play-all">▶ All</button>
+        <button id="play-region" class="primary">▶ Region</button>
+        <button id="pause">⏸</button>
+        <button id="undo-btn" title="Undo (⌘Z / Ctrl+Z)" disabled>↶ Undo</button>
+        <button id="redo-btn" title="Redo (⌘⇧Z / Ctrl+Shift+Z)" disabled>↷ Redo</button>
+        <span style="margin-left: 8px;" class="time">Start <span id="start-time">0.00</span>s</span>
+        <span class="time">End <span id="end-time">0.00</span>s</span>
+        <span class="time">Length <span id="duration">0.00</span>s</span>
+        <button id="clear-region" style="margin-left:auto;">Select all</button>
+      </div>
+      <div class="save-panel">
+        <div class="save-row">
+          <label>Category</label>
+          <select id="category">
+            <option value="morning">morning (صباح)</option>
+            <option value="evening">evening (مساء)</option>
+            <option value="both">both (أي وقت)</option>
+            <option value="custom">custom…</option>
+          </select>
+          <input type="text" id="custom-cat" placeholder="prefix" style="width: 100px; display:none;">
+          <label style="min-width:auto; margin-left:8px;">Index</label>
+          <input type="number" id="index" min="1" value="1" style="width: 60px;">
+          <label style="min-width:auto; margin-left:8px;">Label</label>
+          <input type="text" id="label" placeholder="optional, e.g. ayat_kursi" style="flex: 1;">
+        </div>
+        <div class="save-row">
+          <label>Format</label>
+          <select id="format">
+            <option value="mp3">MP3 (128 kbps)</option>
+            <option value="wav">WAV (lossless)</option>
+          </select>
+          <label style="min-width:auto; margin-left:8px;">Repeat count (in name)</label>
+          <input type="number" id="repeat" min="0" value="0" style="width: 60px;" title="0 = don't include in name">
+          <span style="margin-left:auto;">
+            <span class="time">→ </span><span class="time" id="filename-preview" style="color:#93c5fd; font-weight:600;"></span>
+          </span>
+        </div>
+        <div class="save-row">
+          <button id="save-segment" class="primary" style="flex:1;">Save segment</button>
+          <button id="save-and-advance">Save + move start to end</button>
+        </div>
+      </div>
+      <div class="segments">
+        <div class="segments-title">Saved segments from this file</div>
+        <div id="segments-list"><div style="opacity:0.4; font-size:12px;">None yet</div></div>
+      </div>
+    </div>
+  </main>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+const state = {
+  files: [],
+  currentIndex: -1,
+  audioCtx: null,
+  currentSource: null,
+  region: {start: 0, end: 0},
+  outputHandle: null,
+  playing: false,
+  playStartCtxTime: 0,
+  playStartBufTime: 0,
+  playEndBufTime: 0,
+  categoryCounters: {morning: 1, evening: 1, both: 1, custom: 1},
+  history: {undo: [], redo: [], max: 100},
+};
+
+const $ = (id) => document.getElementById(id);
+const canvas = $('waveform');
+
+function toast(msg, isError=false) {
+  const t = $('toast');
+  t.textContent = msg;
+  t.className = 'toast show' + (isError ? ' error' : '');
+  setTimeout(() => t.className = 'toast', 2000);
+}
+
+// ---------- File loading ----------
+$('load-files').onclick = () => $('file-input').click();
+$('file-input').onchange = async (e) => {
+  const files = Array.from(e.target.files).sort((a,b) => a.name.localeCompare(b.name));
+  for (const file of files) {
+    const id = 'SRC' + String(state.files.length + 1).padStart(2, '0');
+    state.files.push({id, file, buffer: null, segments: []});
+  }
+  renderFileList();
+  if (state.currentIndex < 0 && state.files.length > 0) selectFile(0);
+};
+
+function renderFileList() {
+  const list = $('file-list');
+  list.innerHTML = '';
+  state.files.forEach((f, i) => {
+    const div = document.createElement('div');
+    div.className = 'file-item' + (i === state.currentIndex ? ' active' : '');
+    div.innerHTML = `
+      <span class="file-id">${f.id}</span>
+      <span class="file-name" title="${f.file.name}">${f.file.name}</span>
+      ${f.segments.length ? `<span class="file-count">${f.segments.length}</span>` : ''}
+    `;
+    div.onclick = () => selectFile(i);
+    list.appendChild(div);
+  });
+}
+
+async function selectFile(index) {
+  stopPlayback();
+  state.currentIndex = index;
+  const f = state.files[index];
+  $('empty-state').hidden = true;
+  $('editor-content').hidden = false;
+  $('current-id').textContent = f.id;
+  $('current-name').textContent = f.file.name;
+
+  if (!f.buffer) {
+    if (!state.audioCtx) state.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    toast('Decoding audio…');
+    const arrayBuffer = await f.file.arrayBuffer();
+    try {
+      f.buffer = await state.audioCtx.decodeAudioData(arrayBuffer);
+    } catch (e) {
+      toast('Failed to decode: ' + e.message, true);
+      return;
+    }
+  }
+
+  state.region = {start: 0, end: f.buffer.duration};
+  $('total-dur').textContent = 'Total ' + formatTime(f.buffer.duration);
+  requestAnimationFrame(() => drawWaveform(f.buffer));
+  updateTimes();
+  updateFilenamePreview();
+  renderFileList();
+  renderSegments();
+}
+
+function formatTime(s) {
+  const m = Math.floor(s / 60);
+  const sec = (s % 60).toFixed(2);
+  return `${m}:${sec.padStart(5, '0')}`;
+}
+
+// ---------- Waveform ----------
+function drawWaveform(buffer) {
+  const dpr = window.devicePixelRatio || 1;
+  const cssW = canvas.clientWidth;
+  const cssH = 180;
+  canvas.width = cssW * dpr;
+  canvas.height = cssH * dpr;
+  const ctx = canvas.getContext('2d');
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
+  ctx.scale(dpr, dpr);
+
+  ctx.fillStyle = '#18181b';
+  ctx.fillRect(0, 0, cssW, cssH);
+
+  const data = buffer.getChannelData(0);
+  const step = Math.max(1, Math.floor(data.length / cssW));
+  const mid = cssH / 2;
+  const amp = cssH / 2 - 2;
+
+  ctx.fillStyle = '#4a4a52';
+  for (let x = 0; x < cssW; x++) {
+    let min = 1, max = -1;
+    const off = x * step;
+    const end = Math.min(off + step, data.length);
+    for (let i = off; i < end; i++) {
+      const v = data[i];
+      if (v < min) min = v;
+      if (v > max) max = v;
+    }
+    const y1 = mid + min * amp;
+    const y2 = mid + max * amp;
+    ctx.fillRect(x, y1, 1, Math.max(1, y2 - y1));
+  }
+
+  // Region overlay
+  const x0 = (state.region.start / buffer.duration) * cssW;
+  const x1 = (state.region.end / buffer.duration) * cssW;
+  ctx.fillStyle = 'rgba(37, 99, 235, 0.22)';
+  ctx.fillRect(x0, 0, x1 - x0, cssH);
+
+  // Redraw waveform in blue inside region
+  ctx.fillStyle = '#60a5fa';
+  for (let x = Math.floor(x0); x < Math.ceil(x1); x++) {
+    let min = 1, max = -1;
+    const off = x * step;
+    const end = Math.min(off + step, data.length);
+    for (let i = off; i < end; i++) {
+      const v = data[i];
+      if (v < min) min = v;
+      if (v > max) max = v;
+    }
+    const y1 = mid + min * amp;
+    const y2 = mid + max * amp;
+    ctx.fillRect(x, y1, 1, Math.max(1, y2 - y1));
+  }
+
+  // Handles
+  ctx.strokeStyle = '#2563eb';
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.moveTo(x0, 0); ctx.lineTo(x0, cssH);
+  ctx.moveTo(x1, 0); ctx.lineTo(x1, cssH);
+  ctx.stroke();
+
+  // Handle grip
+  ctx.fillStyle = '#2563eb';
+  ctx.fillRect(x0 - 3, mid - 12, 6, 24);
+  ctx.fillRect(x1 - 3, mid - 12, 6, 24);
+
+  // Playhead
+  if (state.playing) {
+    const elapsed = state.audioCtx.currentTime - state.playStartCtxTime;
+    const pos = state.playStartBufTime + elapsed;
+    if (pos >= 0 && pos <= buffer.duration) {
+      const px = (pos / buffer.duration) * cssW;
+      ctx.strokeStyle = '#fbbf24';
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.moveTo(px, 0); ctx.lineTo(px, cssH);
+      ctx.stroke();
+    }
+  }
+}
+
+// ---------- History (undo / redo) ----------
+function pushHistory(action) {
+  state.history.undo.push(action);
+  if (state.history.undo.length > state.history.max) state.history.undo.shift();
+  state.history.redo = [];
+  updateHistoryButtons();
+}
+
+function updateHistoryButtons() {
+  $('undo-btn').disabled = state.history.undo.length === 0;
+  $('redo-btn').disabled = state.history.redo.length === 0;
+}
+
+function pushRegion(before, after) {
+  if (before.start === after.start && before.end === after.end) return;
+  pushHistory({type: 'region', fileIndex: state.currentIndex, before: {...before}, after: {...after}});
+}
+
+async function applyAction(a, isUndo) {
+  if (a.fileIndex !== state.currentIndex) await selectFile(a.fileIndex);
+  const f = state.files[a.fileIndex];
+  if (a.type === 'region') {
+    state.region = isUndo ? {...a.before} : {...a.after};
+    if (f?.buffer) drawWaveform(f.buffer);
+    updateTimes();
+  } else if (a.type === 'save') {
+    if (isUndo) {
+      f.segments = f.segments.filter(s => s !== a.segment);
+      state.categoryCounters[a.category] = a.prevCounter;
+      $('index').value = a.prevIndex;
+      state.region = {...a.regionBefore};
+      updateFilenamePreview();
+      renderSegments();
+      renderFileList();
+      if (f?.buffer) drawWaveform(f.buffer);
+      updateTimes();
+      if (a.outputHandle) {
+        try { await a.outputHandle.removeEntry(a.filename); toast('Undid save: deleted ' + a.filename); }
+        catch(e) { toast('Undid save; delete failed: ' + e.message, true); }
+      } else {
+        toast('Undid save. File may still be in Downloads.');
+      }
+    } else {
+      // redo: re-write blob
+      try {
+        if (a.outputHandle) {
+          const fh = await a.outputHandle.getFileHandle(a.filename, {create: true});
+          const w = await fh.createWritable();
+          await w.write(a.blob);
+          await w.close();
+        } else {
+          const link = document.createElement('a');
+          link.href = URL.createObjectURL(a.blob);
+          link.download = a.filename;
+          link.click();
+          setTimeout(() => URL.revokeObjectURL(link.href), 1000);
+        }
+      } catch(e) { toast('Redo save failed: ' + e.message, true); return; }
+      f.segments.push(a.segment);
+      state.categoryCounters[a.category] = a.prevCounter + 1;
+      $('index').value = state.categoryCounters[a.category];
+      state.region = {...a.regionAfter};
+      updateFilenamePreview();
+      renderSegments();
+      renderFileList();
+      if (f?.buffer) drawWaveform(f.buffer);
+      updateTimes();
+      toast('Redid save: ' + a.filename);
+    }
+  }
+}
+
+async function undo() {
+  const a = state.history.undo.pop();
+  if (!a) return;
+  await applyAction(a, true);
+  state.history.redo.push(a);
+  updateHistoryButtons();
+}
+
+async function redo() {
+  const a = state.history.redo.pop();
+  if (!a) return;
+  await applyAction(a, false);
+  state.history.undo.push(a);
+  updateHistoryButtons();
+}
+
+$('undo-btn').onclick = undo;
+$('redo-btn').onclick = redo;
+
+// ---------- Canvas interaction ----------
+// Click without drag → seek + play from that point (region preserved).
+// Drag on a handle → move that handle. Drag elsewhere (past 3px) → new region.
+let dragging = null;
+let mouseDown = null;
+const DRAG_THRESHOLD_PX = 3;
+
+canvas.addEventListener('mousedown', (e) => {
+  const f = state.files[state.currentIndex];
+  if (!f?.buffer) return;
+  const rect = canvas.getBoundingClientRect();
+  const x = e.clientX - rect.left;
+  const t = (x / rect.width) * f.buffer.duration;
+  const x0 = (state.region.start / f.buffer.duration) * rect.width;
+  const x1 = (state.region.end / f.buffer.duration) * rect.width;
+
+  let onHandle = null;
+  if (Math.abs(x - x0) < 10) onHandle = 'start';
+  else if (Math.abs(x - x1) < 10) onHandle = 'end';
+
+  mouseDown = {
+    x, t, onHandle,
+    regionBefore: {...state.region},
+    dragged: false,
+  };
+  dragging = onHandle;
+});
+
+canvas.addEventListener('mousemove', (e) => {
+  const f = state.files[state.currentIndex];
+  if (!f?.buffer) return;
+  const rect = canvas.getBoundingClientRect();
+  const x = e.clientX - rect.left;
+
+  if (mouseDown && !mouseDown.dragged && Math.abs(x - mouseDown.x) > DRAG_THRESHOLD_PX) {
+    mouseDown.dragged = true;
+    if (!mouseDown.onHandle) {
+      // Committed to a drag on empty area → start a new region at the click origin.
+      state.region.start = mouseDown.t;
+      state.region.end = mouseDown.t;
+      dragging = 'end';
+    }
+  }
+
+  if (dragging) {
+    const t = Math.max(0, Math.min(f.buffer.duration, (x / rect.width) * f.buffer.duration));
+    if (dragging === 'start') state.region.start = Math.min(t, state.region.end);
+    else state.region.end = Math.max(t, state.region.start);
+    drawWaveform(f.buffer);
+    updateTimes();
+  } else if (!mouseDown) {
+    const x0 = (state.region.start / f.buffer.duration) * rect.width;
+    const x1 = (state.region.end / f.buffer.duration) * rect.width;
+    canvas.style.cursor = (Math.abs(x - x0) < 10 || Math.abs(x - x1) < 10) ? 'ew-resize' : 'crosshair';
+  }
+});
+
+window.addEventListener('mouseup', () => {
+  if (mouseDown && !mouseDown.dragged && !mouseDown.onHandle) {
+    // Plain click — seek + play from that point without touching the region.
+    const f = state.files[state.currentIndex];
+    if (f?.buffer) {
+      const insideRegion = mouseDown.t >= state.region.start && mouseDown.t <= state.region.end;
+      const endT = insideRegion ? state.region.end : f.buffer.duration;
+      if (endT - mouseDown.t > 0.02) playBuffer(f.buffer, mouseDown.t, endT);
+    }
+  } else if (mouseDown && mouseDown.dragged) {
+    pushRegion(mouseDown.regionBefore, state.region);
+  }
+  dragging = null;
+  mouseDown = null;
+});
+
+function updateTimes() {
+  $('start-time').textContent = state.region.start.toFixed(2);
+  $('end-time').textContent = state.region.end.toFixed(2);
+  $('duration').textContent = (state.region.end - state.region.start).toFixed(2);
+}
+
+$('clear-region').onclick = () => {
+  const f = state.files[state.currentIndex];
+  if (!f?.buffer) return;
+  const before = {...state.region};
+  state.region = {start: 0, end: f.buffer.duration};
+  pushRegion(before, state.region);
+  drawWaveform(f.buffer);
+  updateTimes();
+};
+
+// ---------- Playback ----------
+$('play-all').onclick = () => {
+  const f = state.files[state.currentIndex];
+  if (!f?.buffer) return;
+  playBuffer(f.buffer, 0, f.buffer.duration);
+};
+$('play-region').onclick = () => {
+  const f = state.files[state.currentIndex];
+  if (!f?.buffer) return;
+  if (state.region.end - state.region.start < 0.02) { toast('Region is empty'); return; }
+  playBuffer(f.buffer, state.region.start, state.region.end);
+};
+$('pause').onclick = stopPlayback;
+
+function playBuffer(buffer, start, end) {
+  stopPlayback();
+  const src = state.audioCtx.createBufferSource();
+  src.buffer = buffer;
+  src.connect(state.audioCtx.destination);
+  src.start(0, start, end - start);
+  state.currentSource = src;
+  state.playing = true;
+  state.playStartCtxTime = state.audioCtx.currentTime;
+  state.playStartBufTime = start;
+  state.playEndBufTime = end;
+  animatePlayhead();
+  src.onended = () => {
+    state.playing = false;
+    drawWaveform(buffer);
+  };
+}
+
+function stopPlayback() {
+  if (state.currentSource) {
+    try { state.currentSource.stop(); } catch(e) {}
+    state.currentSource = null;
+  }
+  state.playing = false;
+  const f = state.files[state.currentIndex];
+  if (f?.buffer) drawWaveform(f.buffer);
+}
+
+function animatePlayhead() {
+  if (!state.playing) return;
+  const f = state.files[state.currentIndex];
+  if (f?.buffer) drawWaveform(f.buffer);
+  requestAnimationFrame(animatePlayhead);
+}
+
+function currentPlayheadTime() {
+  if (!state.playing) return null;
+  return state.playStartBufTime + (state.audioCtx.currentTime - state.playStartCtxTime);
+}
+
+// ---------- Naming ----------
+function currentPrefix() {
+  const cat = $('category').value;
+  if (cat === 'custom') return $('custom-cat').value.trim() || 'seg';
+  return cat;
+}
+
+function updateFilenamePreview() {
+  const prefix = currentPrefix();
+  const idx = String($('index').value || 1).padStart(2, '0');
+  const label = $('label').value.trim().replace(/[^a-zA-Z0-9_\-]/g, '_');
+  const repeat = parseInt($('repeat').value) || 0;
+  const format = $('format').value;
+  let parts = [prefix, idx];
+  if (repeat > 0) parts.push('x' + repeat);
+  if (label) parts.push(label);
+  $('filename-preview').textContent = parts.join('_') + '.' + format;
+}
+
+$('category').addEventListener('change', () => {
+  $('custom-cat').style.display = $('category').value === 'custom' ? '' : 'none';
+  const cat = currentPrefix();
+  $('index').value = state.categoryCounters[cat] || 1;
+  updateFilenamePreview();
+});
+['category', 'custom-cat', 'index', 'label', 'repeat', 'format'].forEach(id => {
+  const el = $(id);
+  el.addEventListener('input', updateFilenamePreview);
+  el.addEventListener('change', updateFilenamePreview);
+});
+
+// ---------- Save ----------
+$('save-segment').onclick = () => saveSegment(false);
+$('save-and-advance').onclick = () => saveSegment(true);
+
+async function saveSegment(advance) {
+  const f = state.files[state.currentIndex];
+  if (!f?.buffer) return;
+  const {start, end} = state.region;
+  if (end - start < 0.05) { toast('Region too short', true); return; }
+
+  const sliced = sliceBuffer(f.buffer, start, end);
+  const format = $('format').value;
+  const filename = $('filename-preview').textContent;
+
+  let blob;
+  try {
+    if (format === 'wav') blob = encodeWAV(sliced);
+    else blob = encodeMP3(sliced);
+  } catch (e) {
+    toast('Encode failed: ' + e.message, true);
+    return;
+  }
+
+  try {
+    if (state.outputHandle) {
+      const fh = await state.outputHandle.getFileHandle(filename, {create: true});
+      const w = await fh.createWritable();
+      await w.write(blob);
+      await w.close();
+    } else {
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = filename;
+      a.click();
+      setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+    }
+  } catch (e) {
+    toast('Save failed: ' + e.message, true);
+    return;
+  }
+
+  const cat = currentPrefix();
+  const prevCounter = parseInt($('index').value) || 1;
+  const regionBefore = {start, end};
+  const segment = {name: filename, start, end, duration: end - start};
+  f.segments.push(segment);
+  state.categoryCounters[cat] = prevCounter + 1;
+  $('index').value = state.categoryCounters[cat];
+  updateFilenamePreview();
+  renderSegments();
+  renderFileList();
+  toast('Saved ' + filename);
+
+  const regionAfter = advance
+    ? {start: end, end: Math.min(f.buffer.duration, end + Math.max(2, end - start))}
+    : {...regionBefore};
+  if (advance) {
+    state.region = regionAfter;
+    drawWaveform(f.buffer);
+    updateTimes();
+  }
+
+  pushHistory({
+    type: 'save',
+    fileIndex: state.currentIndex,
+    filename,
+    blob,
+    format,
+    segment,
+    prevIndex: prevCounter,
+    prevCounter,
+    category: cat,
+    regionBefore,
+    regionAfter,
+    outputHandle: state.outputHandle,
+  });
+}
+
+function sliceBuffer(buffer, start, end) {
+  const startS = Math.floor(start * buffer.sampleRate);
+  const endS = Math.floor(end * buffer.sampleRate);
+  const len = endS - startS;
+  const out = state.audioCtx.createBuffer(buffer.numberOfChannels, len, buffer.sampleRate);
+  for (let ch = 0; ch < buffer.numberOfChannels; ch++) {
+    out.getChannelData(ch).set(buffer.getChannelData(ch).subarray(startS, endS));
+  }
+  return out;
+}
+
+function encodeWAV(buffer) {
+  const numCh = buffer.numberOfChannels;
+  const sr = buffer.sampleRate;
+  const len = buffer.length;
+  const dataSize = len * numCh * 2;
+  const ab = new ArrayBuffer(44 + dataSize);
+  const v = new DataView(ab);
+  const ws = (o, s) => { for (let i = 0; i < s.length; i++) v.setUint8(o + i, s.charCodeAt(i)); };
+  ws(0, 'RIFF'); v.setUint32(4, 36 + dataSize, true); ws(8, 'WAVE');
+  ws(12, 'fmt '); v.setUint32(16, 16, true); v.setUint16(20, 1, true);
+  v.setUint16(22, numCh, true); v.setUint32(24, sr, true);
+  v.setUint32(28, sr * numCh * 2, true); v.setUint16(32, numCh * 2, true);
+  v.setUint16(34, 16, true); ws(36, 'data'); v.setUint32(40, dataSize, true);
+  const chans = [];
+  for (let ch = 0; ch < numCh; ch++) chans.push(buffer.getChannelData(ch));
+  let off = 44;
+  for (let i = 0; i < len; i++) {
+    for (let ch = 0; ch < numCh; ch++) {
+      let s = Math.max(-1, Math.min(1, chans[ch][i]));
+      v.setInt16(off, s < 0 ? s * 0x8000 : s * 0x7FFF, true);
+      off += 2;
+    }
+  }
+  return new Blob([ab], {type: 'audio/wav'});
+}
+
+function encodeMP3(buffer) {
+  if (typeof lamejs === 'undefined') throw new Error('lamejs not loaded (check network)');
+  const numCh = Math.min(2, buffer.numberOfChannels);
+  const sr = buffer.sampleRate;
+  const enc = new lamejs.Mp3Encoder(numCh, sr, 128);
+  const left = to16(buffer.getChannelData(0));
+  const right = numCh > 1 ? to16(buffer.getChannelData(1)) : null;
+  const chunk = 1152;
+  const out = [];
+  for (let i = 0; i < left.length; i += chunk) {
+    const l = left.subarray(i, i + chunk);
+    const buf = right ? enc.encodeBuffer(l, right.subarray(i, i + chunk)) : enc.encodeBuffer(l);
+    if (buf.length > 0) out.push(buf);
+  }
+  const end = enc.flush();
+  if (end.length > 0) out.push(end);
+  return new Blob(out, {type: 'audio/mpeg'});
+}
+
+function to16(input) {
+  const out = new Int16Array(input.length);
+  for (let i = 0; i < input.length; i++) {
+    const s = Math.max(-1, Math.min(1, input[i]));
+    out[i] = s < 0 ? s * 0x8000 : s * 0x7FFF;
+  }
+  return out;
+}
+
+function renderSegments() {
+  const list = $('segments-list');
+  const f = state.files[state.currentIndex];
+  if (!f || f.segments.length === 0) {
+    list.innerHTML = '<div style="opacity:0.4; font-size:12px;">None yet</div>';
+    return;
+  }
+  list.innerHTML = '';
+  f.segments.forEach((s, i) => {
+    const div = document.createElement('div');
+    div.className = 'segment-item';
+    div.innerHTML = `
+      <span style="opacity:0.6; width:20px;">${i + 1}.</span>
+      <span class="name">${s.name}</span>
+      <span class="time">${s.start.toFixed(2)}–${s.end.toFixed(2)}s · ${s.duration.toFixed(2)}s</span>
+    `;
+    list.appendChild(div);
+  });
+}
+
+// ---------- Output folder (File System Access) ----------
+$('pick-output').onclick = async () => {
+  if (!window.showDirectoryPicker) {
+    toast('Direct save needs Chrome/Edge over localhost. Using Downloads.', true);
+    return;
+  }
+  try {
+    state.outputHandle = await window.showDirectoryPicker({mode: 'readwrite', id: 'adhkar-output'});
+    $('output-mode').textContent = 'Output: ' + state.outputHandle.name + '/';
+    $('output-mode').style.background = '#065f46';
+    $('output-mode').style.color = '#a7f3d0';
+    toast('Output folder set: ' + state.outputHandle.name);
+  } catch(e) {}
+};
+
+if (!window.showDirectoryPicker || location.protocol === 'file:') {
+  $('pick-output').disabled = true;
+  $('pick-output').title = 'Serve over localhost to enable direct folder save';
+}
+
+// ---------- Keyboard ----------
+window.addEventListener('keydown', (e) => {
+  const mod = e.metaKey || e.ctrlKey;
+  if (mod && e.key.toLowerCase() === 'z') {
+    e.preventDefault();
+    if (e.shiftKey) redo(); else undo();
+    return;
+  }
+  if (mod && e.key.toLowerCase() === 'y') {
+    e.preventDefault();
+    redo();
+    return;
+  }
+  if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT') return;
+  const f = state.files[state.currentIndex];
+  if (!f?.buffer) return;
+  if (e.code === 'Space') {
+    e.preventDefault();
+    if (state.playing) stopPlayback();
+    else playBuffer(f.buffer, state.region.start, state.region.end);
+  } else if (e.key === '[') {
+    const before = {...state.region};
+    const t = currentPlayheadTime();
+    if (t !== null) state.region.start = Math.min(t, state.region.end);
+    pushRegion(before, state.region);
+    drawWaveform(f.buffer); updateTimes();
+  } else if (e.key === ']') {
+    const before = {...state.region};
+    const t = currentPlayheadTime();
+    if (t !== null) state.region.end = Math.max(t, state.region.start);
+    pushRegion(before, state.region);
+    drawWaveform(f.buffer); updateTimes();
+  } else if (e.key.toLowerCase() === 's') {
+    saveSegment(false);
+  }
+});
+
+window.addEventListener('resize', () => {
+  const f = state.files[state.currentIndex];
+  if (f?.buffer) drawWaveform(f.buffer);
+});
+
+updateFilenamePreview();
+</script>
+</body>
+</html>

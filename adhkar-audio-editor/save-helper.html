@@ -1,0 +1,254 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Adhkar Audio — Save Helper</title>
+<style>
+  :root {
+    --bg: #0f0f10;
+    --panel: #18181b;
+    --panel2: #1a1a1c;
+    --border: #2a2a2e;
+    --border2: #3a3a3e;
+    --text: #e8e8ea;
+    --muted: #9ca3af;
+    --accent: #2563eb;
+    --accent-2: #93c5fd;
+    --ok: #059669;
+    --warn: #b45309;
+    --warn-text: #fbbf24;
+    --row-alt: #131316;
+  }
+  @media (prefers-color-scheme: light) {
+    :root:not([data-theme="dark"]) {
+      --bg: #f8fafc;
+      --panel: #ffffff;
+      --panel2: #f1f5f9;
+      --border: #e2e8f0;
+      --border2: #cbd5e1;
+      --text: #0f172a;
+      --muted: #64748b;
+      --accent: #2563eb;
+      --accent-2: #1e40af;
+      --ok: #059669;
+      --warn: #b45309;
+      --warn-text: #92400e;
+      --row-alt: #f8fafc;
+    }
+  }
+  * { box-sizing: border-box; }
+  body { font-family: -apple-system, system-ui, "Segoe UI", sans-serif; margin: 0; background: var(--bg); color: var(--text); }
+  header { padding: 14px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+  h1 { font-size: 16px; margin: 0; font-weight: 600; }
+  .sub { font-size: 12px; color: var(--muted); }
+  .search { margin-left: auto; }
+  input[type="search"] { padding: 7px 12px; border: 1px solid var(--border2); background: var(--panel); color: var(--text); border-radius: 6px; font-size: 13px; min-width: 220px; }
+  main { padding: 16px; }
+  .group { background: var(--panel); border: 1px solid var(--border); border-radius: 10px; margin-bottom: 14px; overflow: hidden; }
+  .group-head { padding: 10px 14px; border-bottom: 1px solid var(--border); background: var(--panel2); display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+  .group-head .name { font-family: ui-monospace, SF Mono, monospace; font-size: 13px; font-weight: 600; }
+  .group-head .count { font-size: 11px; padding: 2px 8px; border-radius: 10px; background: var(--accent); color: white; }
+  .group-head .count.multi { background: var(--warn); }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  tr:last-child td { border-bottom: none; }
+  tr:nth-child(even) td { background: var(--row-alt); }
+  th { font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--muted); font-weight: 500; background: var(--panel2); }
+  .idx { width: 40px; color: var(--muted); font-family: ui-monospace, monospace; }
+  .prayer-id { width: 110px; font-family: ui-monospace, SF Mono, monospace; font-size: 12px; color: var(--accent-2); }
+  .prayer-id .flag { display: block; margin-top: 4px; font-size: 10px; color: var(--warn-text); font-family: -apple-system, system-ui, sans-serif; letter-spacing: 0.3px; }
+  .arabic { direction: rtl; text-align: right; font-family: "Amiri", "Scheherazade New", "Noto Naskh Arabic", serif; font-size: 17px; line-height: 1.85; }
+  .arabic .meta { display: block; font-family: -apple-system, system-ui, sans-serif; font-size: 11px; color: var(--muted); direction: ltr; text-align: left; margin-top: 4px; }
+  .filename-cell { width: 220px; }
+  .fname { display: flex; gap: 6px; align-items: center; }
+  .fname code { flex: 1; font-family: ui-monospace, SF Mono, monospace; font-size: 12px; background: var(--panel2); padding: 6px 8px; border-radius: 5px; border: 1px solid var(--border); display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .copy-btn { padding: 6px 10px; font-size: 11px; border: 1px solid var(--border2); background: var(--panel2); color: var(--text); border-radius: 5px; cursor: pointer; font-family: inherit; white-space: nowrap; }
+  .copy-btn:hover { background: var(--border); }
+  .copy-btn.done { background: var(--ok); color: white; border-color: var(--ok); }
+  .toast { position: fixed; bottom: 20px; right: 20px; padding: 10px 16px; background: var(--ok); color: white; border-radius: 6px; font-size: 13px; opacity: 0; transform: translateY(6px); transition: opacity 0.18s, transform 0.18s; z-index: 100; pointer-events: none; }
+  .toast.show { opacity: 1; transform: none; }
+  audio { height: 28px; }
+  .note { padding: 12px 16px; background: var(--panel); border: 1px solid var(--border); border-radius: 10px; margin-bottom: 14px; font-size: 12px; color: var(--muted); }
+  .note b { color: var(--text); }
+  .orphan { background: var(--panel); border: 1px dashed var(--border2); border-radius: 10px; padding: 12px 14px; margin-top: 14px; }
+  .orphan h3 { margin: 0 0 6px 0; font-size: 13px; color: var(--warn-text); }
+  @media (max-width: 720px) {
+    .filename-cell, .prayer-id { width: auto; }
+    .arabic { font-size: 15px; }
+  }
+</style>
+</head>
+<body>
+<header>
+  <div>
+    <h1>Adhkar Audio — Save Helper</h1>
+    <div class="sub">All 34 morning/evening adhkar grouped by input file &middot; click <b>Copy</b> for the target filename</div>
+  </div>
+  <div class="search"><input type="search" id="q" placeholder="Search prayer id or text..."></div>
+</header>
+<main id="root"></main>
+<div class="toast" id="toast">Copied</div>
+
+<script>
+const DATA = {"files": [{"file": "hisn_75.mp3", "hisn": 75, "prayers": [{"slug": "adhkar-1", "arabic": "الْحَمْدُ لِلَّهِ وَحْدَهُ، وَالصَّلاَةُ وَالسَّلاَمُ عَلَى مَنْ لاَ نَبِيَّ بَعْدَهُ", "translation_en": "All praise is due to Allah alone, and peace and blessings be upon him after whom there is no other Prophet.", "repeat": 1, "repeat_label": "Once", "has_audio_ref": false, "source_url": "https://sunnah.com/hisn:75a"}, {"slug": "adhkar-2", "arabic": "أَعُوذُ بِاللَّهِ مِنَ الشَّيطَانِ الرَّجِيمِ ﴿اللَّهُ لاَ إِلَهَ إِلاَّ هُوَ الْحَيُّ الْقَيُّومُ لاَ تَأْخُذُهُ سِنَةٌ وَلاَ نَوْمٌ لَّهُ مَا فِي السَّمَوَاتِ وَمَا فِي الأَرْضِ مَن ذَا الَّذِي يَشْفَعُ عِنْدَهُ إِلاَّ بِإِذْنِهِ يَعْلَمُ مَا بَيْنَ أَيْدِيهِمْ وَمَا خَلْفَهُمْ وَلاَ يُحِيطُونَ بِشَيْءٍ مِّنْ عِلْمِهِ إِلاَّ بِمَا شَاء وَسِعَ كُرْسِيُّهُ السَّمَوَاتِ وَالْأَرْضَ وَلاَ يَؤُودُهُ حِفْظُهُمَا وَهُوَ الْعَلِيُّ الْعَظِيمُ﴾", "translation_en": "Allah! There is none worthy of worship but He, the Ever-Living, the One Who sustains and protects all that exists. Neither slumber nor sleep overtakes Him. To Him belongs whatever is in the heavens and whatever is on the earth. Who is he that can intercede with Him except with His Permission? He knows what happens to them in this world, and what will happen to them in the Hereafter. And they will never encompass anything of His Knowledge except that which He wills. His Throne extends over the heavens and the earth, and He feels no fatigue in guarding and preserving them. And He is the Most High, the Most Great.", "repeat": 1, "repeat_label": "Once", "has_audio_ref": true, "source_url": "https://sunnah.com/hisn:75"}]}, {"file": "hisn_76.mp3", "hisn": 76, "prayers": [{"slug": "adhkar-4", "arabic": "قُلْ هُوَ ٱللَّهُ أَحَدٌ، ٱللَّهُ ٱلصَّمَدُ، لَمْ يَلِدْ وَلَمْ يُولَدْ، وَلَمْ يَكُن لَّهُۥ كُفُوًا أَحَدٌۢ", "translation_en": "(1) Say, He is Allah, [who is] One, (2) Allah, the Eternal Refuge.(3) He neither begets nor is born,(4) Nor is there to Him any equivalent.", "repeat": 3, "repeat_label": "Three times", "has_audio_ref": false, "source_url": "https://sunnah.com/hisn:76"}, {"slug": "adhkar-5", "arabic": "قُلْ أَعُوذُ بِرَبِّ ٱلْفَلَقِ، مِن شَرِّ مَا خَلَقَ، وَمِن شَرِّ غَاسِقٍ إِذَا وَقَبَ، وَمِن شَرِّ ٱلنَّفَّٰثَٰتِ فِى ٱلْعُقَدِ، وَمِن شَرِّ حَاسِدٍ إِذَا حَسَدَ", "translation_en": "(1) Say, I seek refuge in the Lord of daybreak (2) From the evil of that which He created (3) And from the evil of darkness when it settles (4) And from the evil of the blowers in knots (5) And from the evil of an envier when he envies.", "repeat": 3, "repeat_label": "Three times", "has_audio_ref": false, "source_url": "https://sunnah.com/hisn:70"}, {"slug": "adhkar-6", "arabic": "قُلْ أَعُوذُ بِرَبِّ ٱلنَّاسِ، مَلِكِ ٱلنَّاسِ، إِلَٰهِ ٱلنَّاسِ، مِن شَرِّ ٱلْوَسْوَاسِ ٱلْخَنَّاسِ، ٱلَّذِى يُوَسْوِسُ فِى صُدُورِ ٱلنَّاسِ، مِنَ ٱلْجِنَّةِ وَٱلنَّاسِ", "translation_en": "(1) Say, I seek refuge in the Lord of mankind (2) The Sovereign of mankind (3) The God of mankind (4) From the evil of the retreating whisperer (5) Who whispers [evil] into the breasts of mankind (6) From among the jinn and mankind.", "repeat": 3, "repeat_label": "Three times", "has_audio_ref": false, "source_url": "https://sunnah.com/hisn:76"}]}, {"file": "hisn_77.mp3", "hisn": 77, "prayers": [{"slug": "adhkar-7", "arabic": "أَصْبَحْنَا وَأَصْبَحَ الْملْكُ لِلَّهِ، وَالْحَمْدُ لِلَّهِ، لاَ إِلَهَ إلاَّ اللَّهُ وَحْدَهُ لاَ شَرِيكَ لَهُ، لَهُ الْملْكُ وَلَهُ الْحَمْدُ وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ، رَبِّ أَسْأَلُكَ خَيْرَ مَا فِي هَذَا الْيَوْمِ وَخَيرَ مَا بَعْدَهُ، وَأَعُوذُ بِكَ مِنْ شَرِّ مَا فِي هَذَا الْيَوْمِ وَشَرِّ مَا بَعْدَهُ، رَبِّ أَعُوذُ بِكَ مِنَ الْكَسَلِ وَسُوءِ الْكِبَرِ، رَبِّ أَعُوذُ بِكَ مِنْ عَذَابٍ فِي النَّارِ وَعَذَابٍ فِي الْقَبْرِ", "translation_en": "We have reached the morning and at this very time unto Allah belongs all sovereignty, and all praise is for Allah. None has the right to be worshipped except Allah, alone, without partner, to Him belongs all sovereignty and praise, and He is over all things omnipotent. My Lord, I ask You for the good of this day and the good of what follows it and I take refuge in You from the evil of this day and the evil of what follows it. My Lord, I take refuge in You from laziness and senility. My Lord, I take refuge in You from torment in the Fire and punishment in the grave.", "repeat": 1, "repeat_label": "Once", "has_audio_ref": true, "source_url": "https://sunnah.com/hisn:77"}, {"slug": "adhkar-8", "arabic": "أمسينا وأمسى الملك للَّه، وَالْحَمْدُ لِلَّهِ، لاَ إِلَهَ إلاَّ اللَّهُ وَحْدَهُ لاَ شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ، رب أسألك خير ما في هذه الليلة، وخير ما بعدها، وأعوذ بك من شر ما في هذه الليلة، وشر ما بعدها، رَبِّ أَعُوذُ بِكَ مِنَ الْكَسَلِ وَسُوءِ الْكِبَرِ، رَبِّ أَعُوذُ بِكَ مِنْ عَذَابٍ فِي النَّارِ وَعَذَابٍ فِي الْقَبْرِ", "translation_en": "We have reached the evening and at this very time unto Allah belongs all sovereignty, and all praise is for Allah. None has the right to be worshipped except Allah, alone, without partner, to Him belongs all sovereignty and praise, and He is over all things omnipotent. My Lord, I ask You for the good of this night and the good of what follows it and I take refuge in You from the evil of this night and the evil of what follows it. My Lord, I take refuge in You from laziness and senility. My Lord, I take refuge in You from torment in the Fire and punishment in the grave.", "repeat": 1, "repeat_label": "Once", "has_audio_ref": true, "source_url": "https://sunnah.com/hisn:77"}]}, {"file": "hisn_78.mp3", "hisn": 78, "prayers": [{"slug": "adhkar-9", "arabic": "اللَّهُمَّ بِكَ أَصْبَحْنَا، وَبِكَ أَمْسَيْنَا، وَبِكَ نَحْيَا، وَبِكَ نَمُوتُ وَإِلَيْكَ النُّشُورُ", "translation_en": "O Allah, by Your leave we have reached the morning and by Your leave we have reached the evening, by Your leave we live and die and unto You is our resurrection", "repeat": 1, "repeat_label": "Once", "has_audio_ref": true, "source_url": "https://sunnah.com/hisn:78"}, {"slug": "adhkar-10", "arabic": "اللَّهمَّ بِكَ أمسَينا وبِكَ أصبَحنا وبِكَ نَحيا وبِكَ نموتُ، وإليكَ المصيرُ", "translation_en": "O Allah, by Your leave we have reached the evening and by Your leave we have reached the morning, by Your leave we live and die and unto You is our return.", "repeat": 1, "repeat_label": "Once", "has_audio_ref": true, "source_url": "https://sunnah.com/hisn:78"}]}, {"file": "hisn_79.mp3", "hisn": 79, "prayers": [{"slug": "adhkar-11", "arabic": "اللَّهُمَّ أَنْتَ رَبِّي لَا إِلَهَ إِلاَّ أَنْتَ، خَلَقْتَنِي وَأَنَا عَبْدُكَ، وَأَنَا عَلَى عَهْدِكَ وَوَعْدِكَ مَا اسْتَطَعْتُ، أَعُوذُ بِكَ مِنْ شَرِّ مَا صَنَعْتُ، أَبُوءُ لَكَ بِنِعْمَتِكَ عَلَيَّ، وَأَبُوءُ بِذَنْبِي فَاغْفِرْ لِي فَإِنَّهُ لاَ يَغْفِرُ الذُّنوبَ إِلاَّ أَنْتَ", "translation_en": "O Allah, You are my Lord, none has the right to be worshipped except You, You created me and I am Your servant and I abide to Your covenant and promise as best I can, I take refuge in You from the evil of which I have committed.  I acknowledge Your favour upon me and I acknowledge my sin, so forgive me, for verily none can forgive sin except You.", "repeat": 1, "repeat_label": "Once", "has_audio_ref": true, "source_url": "https://sunnah.com/hisn:79"}]}, {"file": "hisn_80.mp3", "hisn": 80, "prayers": [{"slug": "adhkar-12", "arabic": "اللَّهُمَّ إِنِّي أَصْبَحْتُ أُشْهِدُكَ، وَأُشْهِدُ حَمَلَةَ عَرْشِكَ، وَمَلاَئِكَتَكَ، وَجَمِيعَ خَلْقِكَ، أَنَّكَ أَنْتَ اللَّهُ لَا إِلَهَ إِلاَّ أَنْتَ وَحْدَكَ لاَ شَرِيكَ لَكَ، وَأَنَّ مُحَمَّداً عَبْدُكَ وَرَسُولُكَ", "translation_en": "O Allah, verily I have reached the morning and call on You, the bearers of Your throne, Your angels, and all of Your creation to witness that You are Allah, none has the right to be worshipped except You, alone, without partner, and that Muhammad is Your Servant and Messenger.", "repeat": 4, "repeat_label": "Four times", "has_audio_ref": true, "source_url": "https://sunnah.com/hisn:80"}, {"slug": "adhkar-13", "arabic": "اللَّهم إني أمسيت أُشْهِدُكَ، وَأُشْهِدُ حَمَلَةَ عَرْشِكَ، وَمَلاَئِكَتَكَ، وَجَمِيعَ خَلْقِكَ، أَنَّكَ أَنْتَ اللَّهُ لَا إِلَهَ إِلاَّ أَنْتَ وَحْدَكَ لاَ شَرِيكَ لَكَ، وَأَنَّ مُحَمَّداً عَبْدُكَ وَرَسُولُكَ", "translation_en": "O Allah, verily I have reached the evening and call on You, the bearers of Your throne, Your angels, and all of Your creation to witness that You are Allah, none has the right to be worshipped except You, alone, without partner, and that Muhammad is Your Servant and Messenger.", "repeat": 4, "repeat_label": "Four times", "has_audio_ref": true, "source_url": "https://sunnah.com/hisn:80"}]}, {"file": "hisn_81.mp3", "hisn": 81, "prayers": [{"slug": "adhkar-14", "arabic": "اللَّهُمَّ مَا أَصْبَحَ بِي مِنْ نِعْمَةٍ أَوْ بِأَحَدٍ مِنْ خَلْقِكَ فَمِنْكَ وَحْدَكَ لاَ شَرِيكَ لَكَ، فَلَكَ الْحَمْدُ وَلَكَ الشُّكْرُ", "translation_en": "O Allah, what blessing I or any of Your creation have risen upon is from You alone, without partner. So for You is all praise and unto You all thanks.", "repeat": 1, "repeat_label": "Once", "has_audio_ref": true, "source_url": "https://sunnah.com/hisn:81"}, {"slug": "adhkar-15", "arabic": "اللَّهم ما أمسى بي مِنْ نِعْمَةٍ أَوْ بِأَحَدٍ مِنْ خَلْقِكَ فَمِنْكَ وَحْدَكَ لاَ شَرِيكَ لَكَ، فَلَكَ الْحَمْدُ وَلَكَ الشُّكْرُ", "translation_en": "O Allah, what blessing I or any of Your creation have reached the evening upon is from You alone, without partner. So for You is all praise and unto You all thanks", "repeat": 1, "repeat_label": "Once", "has_audio_ref": true, "source_url": "https://sunnah.com/hisn:81"}]}, {"file": "hisn_82.mp3", "hisn": 82, "prayers": [{"slug": "adhkar-16", "arabic": "اللَّهُمَّ عَافِنِي فِي بَدَنِي، اللَّهُمَّ عَافِنِي فِي سَمْعِي، اللَّهُمَّ عَافِنِي فِي بَصَرِي، لاَ إِلَهَ إِلاَّ أَنْتَ. اللَّهُمَّ إِنِّي أَعُوذُ بِكَ مِنَ الْكُفْرِ، وَالفَقْرِ، وَأَعُوذُ بِكَ مِنْ عَذَابِ القَبْرِ، لاَ إِلَهَ إِلاَّ أَنْتَ", "translation_en": "(O Allah, grant my body health, O Allah, grant my hearing health, O Allah, grant my sight health.  None has the right to be worshipped except You.) (O Allah, I take refuge with You from disbelief and poverty, and I take refuge with You from the punishment of the grave.  None has the right to be worshipped except You.)", "repeat": 3, "repeat_label": "Three times", "has_audio_ref": true, "source_url": "https://sunnah.com/hisn:82"}]}, {"file": "hisn_83.mp3", "hisn": 83, "prayers": [{"slug": "adhkar-17", "arabic": "حَسْبِيَ اللَّهُ لاَ إِلَهَ إِلاَّ هُوَ عَلَيهِ تَوَكَّلتُ وَهُوَ رَبُّ الْعَرْشِ الْعَظِيمِ", "translation_en": "Allah is Sufficient for me, none has the right to be worshipped except Him, upon Him I rely and He is Lord of the exalted throne.", "repeat": 7, "repeat_label": "Seven times", "has_audio_ref": true, "source_url": "https://sunnah.com/hisn:83"}]}, {"file": "hisn_84.mp3", "hisn": 84, "prayers": [{"slug": "adhkar-18", "arabic": "اللَّهُمَّ إِنِّي أَسْأَلُكَ الْعَفْوَ وَالْعَافِيَةَ فِي الدُّنْيَا وَالآخِرَةِ، اللَّهُمَّ إِنِّي أَسْأَلُكَ الْعَفْوَ وَالْعَافِيَةَ: فِي دِينِي وَدُنْيَايَ وَأَهْلِي، وَمَالِي، اللَّهُمَّ اسْتُرْ عَوْرَاتِي، وَآمِنْ رَوْعَاتِي، اللَّهُمَّ احْفَظْنِي مِنْ بَينِ يَدَيَّ، وَمِنْ خَلْفِي، وَعَنْ يَمِينِي، وَعَنْ شِمَالِي، وَمِنْ فَوْقِي، وَأَعُوذُ بِعَظَمَتِكَ أَنْ أُغْتَالَ مِنْ تَحْتِي", "translation_en": "O Allah, I ask You for pardon and well-being in this life and the next. O Allah, I ask You for pardon and well-being in my religious and worldly affairs, and my family and my wealth. O Allah, veil my weaknesses and set at ease my dismay. O Allah, preserve me from the front and from behind and on my right and on my left and from above, and I take refuge with You lest I be swallowed up by the earth.", "repeat": 1, "repeat_label": "Once", "has_audio_ref": true, "source_url": "https://sunnah.com/hisn:84"}]}, {"file": "hisn_85.mp3", "hisn": 85, "prayers": [{"slug": "adhkar-19", "arabic": "اللَّهُمَّ عَالِمَ الغَيْبِ وَالشَّهَادَةِ فَاطِرَ السَّمَوَاتِ وَالْأَرْضِ، رَبَّ كُلِّ شَيْءٍ وَمَلِيكَهُ، أَشْهَدُ أَنْ لاَ إِلَهَ إِلاَّ أَنْتَ، أَعُوذُ بِكَ مِنْ شَرِّ نَفْسِي، وَمِنْ شَرِّ الشَّيْطانِ وَشَرَكِهِ، وَأَنْ أَقْتَرِفَ عَلَى نَفْسِي سُوءاً، أَوْ أَجُرَّهُ إِلَى مُسْلِمٍ", "translation_en": "(O Allah, Knower of the unseen and the seen, Creator of the heavens and the Earth, Lord and Sovereign of all things, I bear witness that none has the right to be worshipped except You. I take refuge in You from the evil of my soul and from the evil and shirk of the devil, and from committing wrong against my soul or bringing such upon another Muslim.)(shirk: to associate others with Allah in those things which are specific to Him.  This can occur in (1) belief, e.g. to believe that other than Allah has the power to benefit or harm, (2) speech, e.g. to swear by other than Allah and (3) action, e.g. to bow or prostrate to other than Allah.)", "repeat": 1, "repeat_label": "Once", "has_audio_ref": true, "source_url": "https://sunnah.com/hisn:85"}]}, {"file": "hisn_86.mp3", "hisn": 86, "prayers": [{"slug": "adhkar-20", "arabic": "بِسْمِ اللَّهِ الَّذِي لاَ يَضُرُّ مَعَ اسْمِهِ شَيْءٌ فِي الْأَرْضِ وَلاَ فِي السّمَاءِ وَهُوَ السَّمِيعُ الْعَلِيمُ", "translation_en": "In the name of Allah with whose name nothing is harmed on earth nor in the heavens and He is The All-Seeing, The All-Knowing.", "repeat": 3, "repeat_label": "Three times", "has_audio_ref": true, "source_url": "https://sunnah.com/hisn:86"}]}, {"file": "hisn_87.mp3", "hisn": 87, "prayers": [{"slug": "adhkar-21", "arabic": "رَضِيتُ بِاللَّهِ رَبَّاً، وَبِالْإِسْلاَمِ دِيناً، وَبِمُحَمَّدٍ ﷺ نَبِيًّا", "translation_en": "I am pleased with Allah as a Lord, and Islam as a religion and Muhammad  as a Prophet.", "repeat": 3, "repeat_label": "Three times", "has_audio_ref": true, "source_url": "https://sunnah.com/hisn:87"}]}, {"file": "hisn_88.mp3", "hisn": 88, "prayers": [{"slug": "adhkar-22", "arabic": "يَا حَيُّ يَا قَيُّومُ بِرَحْمَتِكَ أَسْتَغيثُ أَصْلِحْ لِي شَأْنِيَ كُلَّهُ وَلاَ تَكِلْنِي إِلَى نَفْسِي طَرْفَةَ عَيْنٍ", "translation_en": "O Ever Living, O Self-Subsisting and Supporter of all, by Your mercy I seek assistance, rectify for me all of my affairs and do not leave me to myself, even for the blink of an eye.", "repeat": 1, "repeat_label": "Once", "has_audio_ref": true, "source_url": "https://sunnah.com/hisn:88"}]}, {"file": "hisn_89.mp3", "hisn": 89, "prayers": [{"slug": "adhkar-23", "arabic": "أَصْبَحْنَا وَأَصْبَحَ الْمُلْكُ لِلَّهِ رَبِّ الْعَالَمِينَ، اللَّهُمَّ إِنِّي أَسْأَلُكَ خَيْرَ هَذَا الْيَوْمِ: فَتْحَهُ، وَنَصْرَهُ، وَنورَهُ، وَبَرَكَتَهُ، وَهُدَاهُ، وَأَعُوذُ بِكَ مِنْ شَرِّ مَا فِيهِ وَشَرِّ مَا بَعْدَهُ", "translation_en": "We have reached the morning and at this very time all sovereignty belongs to Allah, Lord of the worlds. O Allah, I ask You for the good of this day, its triumphs and its victories, its light and its blessings and its guidance, and I take refuge in You from the evil of this day and the evil that follows it.", "repeat": 1, "repeat_label": "Once", "has_audio_ref": true, "source_url": "https://sunnah.com/hisn:89"}, {"slug": "adhkar-24", "arabic": "أَمْسَيْنا وَأَمْسَى الْمُلْكُ للهِ رَبِّ الْعَالَمَيْنِ، اللَّهُمَّ إِنَّي أسْأَلُكَ خَيْرَ هَذَه اللَّيْلَةِ فَتْحَهَا ونَصْرَهَا، ونُوْرَهَا وبَرَكَتهَا، وَهُدَاهَا، وَأَعُوذُ بِكَ مِنْ شَرِّ مَا فيهِا وَشَرَّ مَا بَعْدَهَا", "translation_en": "We have reached the evening and at this very time all sovereignty belongs to Allah, Lord of the worlds. O Allah, I ask You for the good of tonight, its triumphs and its victories, its light and its blessings and its guidance, and I take refuge in You from the evil of tonight and the evil that follows it.", "repeat": 1, "repeat_label": "Once", "has_audio_ref": true, "source_url": "https://sunnah.com/hisn:89"}]}, {"file": "hisn_90.mp3", "hisn": 90, "prayers": [{"slug": "adhkar-25", "arabic": "أَصْبَحْنا عَلَى فِطْرَةِ الْإِسْلاَمِ، وَعَلَى كَلِمَةِ الْإِخْلاَصِ، وَعَلَى دِينِ نَبِيِّنَا مُحَمَّدٍ ﷺ، وَعَلَى مِلَّةِ أَبِينَا إِبْرَاهِيمَ، حَنِيفاً مُسْلِماً وَمَا كَانَ مِنَ الْمُشرِكِينَ", "translation_en": "We rise upon the fitrah of Islam, and the word of pure faith, and upon the religion of our Prophet Muhammad ﷺ, and the religion of our forefather Ibraheem, who was a Muslim and of true faith and was not of those who associate others with Allah.", "repeat": 1, "repeat_label": "Once", "has_audio_ref": true, "source_url": "https://sunnah.com/hisn:90"}, {"slug": "adhkar-26", "arabic": "أمسينا على فطرة الإسلام، وَعَلَى كَلِمَةِ الْإِخْلاَصِ، وَعَلَى دِينِ نَبِيِّنَا مُحَمَّدٍ ﷺ، وَعَلَى مِلَّةِ أَبِينَا إِبْرَاهِيمَ، حَنِيفاً مُسْلِماً وَمَا كَانَ مِنَ الْمُشرِكِينَ", "translation_en": "We have entered the evening upon the fitrah of Islam, and the word of pure faith, and upon the religion of our Prophet Muhammad ﷺ, and the religion of our forefather Ibraheem, who was a Muslim and of true faith and was not of those who associate others with Allah.", "repeat": 1, "repeat_label": "Once", "has_audio_ref": true, "source_url": "https://sunnah.com/hisn:90"}]}, {"file": "hisn_91.mp3", "hisn": 91, "prayers": [{"slug": "adhkar-34", "arabic": "سُبْحَانَ اللَّهِ وَبِحَمْدِهِ", "translation_en": "How perfect Allah is and I praise Him.", "repeat": 100, "repeat_label": "One hundred times", "has_audio_ref": true, "source_url": "https://sunnah.com/hisn:91"}]}, {"file": "hisn_92.mp3", "hisn": 92, "prayers": [{"slug": "adhkar-28", "arabic": "لاَ إِلَهَ إِلاَّ اللَّهُ، وَحْدَهُ لاَ شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ", "translation_en": "None has the right to be worshipped except Allah, alone, without partner, to Him belongs all sovereignty and praise, and He is over all things omnipotent.", "repeat": 10, "repeat_label": "Ten times or once when lazy", "has_audio_ref": true, "source_url": "https://sunnah.com/hisn:93"}]}, {"file": "hisn_93.mp3", "hisn": 93, "prayers": [{"slug": "adhkar-32", "arabic": "لاَ إِلَهَ إِلاَّ اللَّهُ، وَحْدَهُ لاَ شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ", "translation_en": "None has the right to be worshipped except Allah, alone, without partner, to Him belongs all sovereignty and praise, and He is over all things omnipotent.", "repeat": 100, "repeat_label": "One hundred times", "has_audio_ref": true, "source_url": "https://sunnah.com/hisn:93"}]}, {"file": "hisn_94.mp3", "hisn": 94, "prayers": [{"slug": "adhkar-31", "arabic": "سُبْحَانَ اللَّهِ وَبِحَمْدِهِ: عَدَدَ خَلْقِهِ، وَرِضَا نَفْسِهِ، وَزِنَةَ عَرْشِهِ، وَمِدَادَ كَلِمَاتِهِ", "translation_en": "How perfect Allah is and I praise Him by the number of His creation and His pleasure, and by the weight of His throne, and the ink of His words.", "repeat": 3, "repeat_label": "Three times", "has_audio_ref": true, "source_url": "https://sunnah.com/hisn:94"}]}, {"file": "hisn_95.mp3", "hisn": 95, "prayers": [{"slug": "adhkar-27", "arabic": "اللَّهُمَّ إِنِّي أَسْأَلُكَ عِلْماً نَافِعاً، وَرِزْقاً طَيِّباً، وَعَمَلاً مُتَقَبَّلاً", "translation_en": "O Allah, I ask You for knowledge which is beneficial and sustenance which is good, and deeds which are acceptable.", "repeat": 1, "repeat_label": "Once", "has_audio_ref": true, "source_url": "https://sunnah.com/hisn:95"}]}, {"file": "hisn_96.mp3", "hisn": 96, "prayers": [{"slug": "adhkar-33", "arabic": "أَسْتَغْفِرُ اللَّهَ وَأَتُوبُ إِلَيْهِ", "translation_en": "I seek Allaah’s forgiveness and I turn to Him in repentance.", "repeat": 100, "repeat_label": "One hundred times a day", "has_audio_ref": true, "source_url": "https://sunnah.com/hisn:96"}]}, {"file": "hisn_97.mp3", "hisn": 97, "prayers": [{"slug": "adhkar-30", "arabic": "أَعُوذُ بِكَلِمَاتِ اللَّهِ التَّامَّاتِ مِنْ شَرِّ مَا خَلَقَ", "translation_en": "I take refuge in Allah’s perfect words from the evil He has created.", "repeat": 3, "repeat_label": "Three times", "has_audio_ref": true, "source_url": "https://sunnah.com/hisn:216"}]}, {"file": "hisn_98.mp3", "hisn": 98, "prayers": [{"slug": "adhkar-29", "arabic": "اللَّهُمَّ صَلِّ وَسَلِّمْ عَلَى نَبَيِّنَا مُحَمَّدٍ", "translation_en": "O Allaah, send prayers and peace upon our Prophet Muhammad.", "repeat": 10, "repeat_label": "Ten times", "has_audio_ref": true, "source_url": "https://sunnah.com/hisn:98"}]}], "unassigned": [{"slug": "adhkar-3", "arabic": "أَعُوذُ بِاللَّهِ مِنَ الشَّيطَانِ الرَّجِيمِ ﴿آمَنَ الرَّسُولُ بِمَا أُنزِلَ إِلَيْهِ مِن رَّبِّهِ وَالْمُؤْمِنُونَ كُلٌّ آمَنَ بِاللَّهِ وَمَلآئِكَتِهِ وَكُتُبِهِ وَرُسُلِهِ لاَ نُفَرِّقُ بَيْنَ أَحَدٍ مِّن رُّسُلِهِ وَقَالُواْ سَمِعْنَا وَأَطَعْنَا غُفْرَانَكَ رَبَّنَا وَإِلَيْكَ الْمَصِيرُ* لاَ يُكَلِّفُ اللَّهُ نَفْساً إِلاَّ وُسْعَهَا لَهَا مَا كَسَبَتْ وَعَلَيْهَا مَا اكْتَسَبَتْ رَبَّنَا لاَ تُؤَاخِذْنَا إِن نَّسِينَا أَوْ أَخْطَأْنَا رَبَّنَا وَلاَ تَحْمِلْ عَلَيْنَا إِصْراً كَمَا حَمَلْتَهُ عَلَى الَّذِينَ مِن قَبْلِنَا رَبَّنَا وَلاَ تُحَمِّلْنَا مَا لاَ طَاقَةَ لَنَا بِهِ وَاعْفُ عَنَّا وَاغْفِرْ لَنَا وَارْحَمْنَآ أَنتَ مَوْلاَنَا فَانصُرْنَا عَلَى الْقَوْمِ الْكَافِرِينَ﴾. [البقرة 285 - 286]", "translation_en": "(285) The Messenger has believed in what was revealed to him from his Lord, and [so have] the believers. All of them have believed in Allah and His angels and His books and His messengers, [saying], We make no distinction between any of His messengers. And they say, We hear and we obey. [We seek] Your forgiveness, our Lord, and to You is the [final] destination. (286) Allah does not charge a soul except [with that within] its capacity. It will have [the consequence of] what [good] it has gained, and it will bear [the consequence of] what [evil] it has earned. Our Lord, do not impose blame upon us if we have forgotten or erred. Our Lord, and lay not upon us a burden like that which You laid upon those before us. Our Lord, and burden us not with that which we have no ability to bear. And pardon us; and forgive us; and have mercy upon us. You are our protector, so give us victory over the disbelieving people.", "repeat": 1, "repeat_label": "Once", "expected_file": "hisn_101.mp3", "source_url": "https://sunnah.com/hisn:101"}]};
+
+function el(t, cls, txt) {
+  const e = document.createElement(t);
+  if (cls) e.className = cls;
+  if (txt != null) e.textContent = txt;
+  return e;
+}
+
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(t._h);
+  t._h = setTimeout(() => t.classList.remove('show'), 1100);
+}
+
+async function copyText(txt, btn) {
+  try {
+    await navigator.clipboard.writeText(txt);
+    toast('Copied: ' + txt);
+    if (btn) {
+      const orig = btn.textContent;
+      btn.textContent = '✓';
+      btn.classList.add('done');
+      setTimeout(() => {
+        btn.textContent = orig;
+        btn.classList.remove('done');
+      }, 900);
+    }
+  } catch (e) {
+    const ta = document.createElement('textarea');
+    ta.value = txt;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    ta.remove();
+    toast('Copied: ' + txt);
+  }
+}
+
+function makeRow(p, i) {
+  const r = document.createElement('tr');
+  r.appendChild(el('td', 'idx', String(i + 1)));
+
+  const idCell = el('td', 'prayer-id');
+  idCell.appendChild(document.createTextNode(p.slug));
+  if (!p.has_audio_ref) {
+    const flag = el('span', 'flag', 'audio may be bundled');
+    idCell.appendChild(flag);
+  }
+  r.appendChild(idCell);
+
+  const arCell = el('td', 'arabic');
+  arCell.textContent = p.arabic;
+  const meta = el('span', 'meta');
+  meta.textContent = (p.repeat_label ? p.repeat_label + ' — ' : '') + (p.translation_en || '');
+  arCell.appendChild(meta);
+  r.appendChild(arCell);
+
+  const fnCell = el('td', 'filename-cell');
+  const fname = p.slug + '.mp3';
+  const wrap = el('div', 'fname');
+  const code = document.createElement('code');
+  code.textContent = fname;
+  const btn = el('button', 'copy-btn', 'Copy');
+  btn.onclick = () => copyText(fname, btn);
+  wrap.appendChild(code);
+  wrap.appendChild(btn);
+  fnCell.appendChild(wrap);
+  r.appendChild(fnCell);
+
+  return r;
+}
+
+function render(filter) {
+  const root = document.getElementById('root');
+  root.innerHTML = '';
+  const f = (filter || '').trim().toLowerCase();
+
+  // banner
+  const note = el('div', 'note');
+  note.innerHTML = '<b>34 morning/evening adhkar</b> across 24 input files. Prayers marked <span style="color:var(--warn-text)">audio may be bundled</span> have no explicit audio URL — listen inside the file that has them (bundled with an adjacent prayer).';
+  root.appendChild(note);
+
+  DATA.files.forEach((group) => {
+    const rows = group.prayers.filter(p => {
+      if (!f) return true;
+      return p.slug.toLowerCase().includes(f) || p.arabic.includes(filter) || (p.translation_en||'').toLowerCase().includes(f);
+    });
+    if (!rows.length && f) return;
+
+    const box = el('div', 'group');
+    const head = el('div', 'group-head');
+    head.appendChild(el('span', 'name', group.file));
+    const cn = el('span', 'count' + (group.prayers.length > 1 ? ' multi' : ''), group.prayers.length + ' prayer' + (group.prayers.length > 1 ? 's' : ''));
+    head.appendChild(cn);
+
+    const audio = document.createElement('audio');
+    audio.controls = true;
+    audio.preload = 'none';
+    audio.src = 'input/' + group.file;
+    head.appendChild(audio);
+
+    box.appendChild(head);
+
+    if (rows.length) {
+      const table = document.createElement('table');
+      const thead = document.createElement('thead');
+      const tr = document.createElement('tr');
+      ['#', 'Prayer ID', 'Arabic', 'Filename'].forEach(h => tr.appendChild(el('th', null, h)));
+      thead.appendChild(tr);
+      table.appendChild(thead);
+
+      const tbody = document.createElement('tbody');
+      rows.forEach((p, i) => tbody.appendChild(makeRow(p, i)));
+      table.appendChild(tbody);
+      box.appendChild(table);
+    }
+    root.appendChild(box);
+  });
+
+  // unassigned prayers (no matching input file)
+  const unassigned = (DATA.unassigned || []).filter(p => {
+    if (!f) return true;
+    return p.slug.toLowerCase().includes(f) || p.arabic.includes(filter) || (p.translation_en||'').toLowerCase().includes(f);
+  });
+  if (unassigned.length) {
+    const box = el('div', 'orphan');
+    const h = el('h3', null, 'Not in these input files — audio needed separately');
+    box.appendChild(h);
+    const p = el('div', null, '');
+    p.style.fontSize = '11px';
+    p.style.color = 'var(--muted)';
+    p.style.marginBottom = '8px';
+    unassigned.forEach(u => {
+      const line = document.createElement('div');
+      line.textContent = 'Expected source: ' + (u.expected_file || u.source_url);
+      p.appendChild(line);
+    });
+    box.appendChild(p);
+
+    const table = document.createElement('table');
+    const thead = document.createElement('thead');
+    const tr = document.createElement('tr');
+    ['#', 'Prayer ID', 'Arabic', 'Filename'].forEach(h => tr.appendChild(el('th', null, h)));
+    thead.appendChild(tr);
+    table.appendChild(thead);
+    const tbody = document.createElement('tbody');
+    unassigned.forEach((u, i) => tbody.appendChild(makeRow(u, i)));
+    table.appendChild(tbody);
+    box.appendChild(table);
+    root.appendChild(box);
+  }
+}
+
+document.getElementById('q').addEventListener('input', (e) => render(e.target.value));
+render('');
+</script>
+</body>
+</html>
