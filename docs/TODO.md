@@ -106,17 +106,28 @@ exactly what the whole slice-and-verify pipeline exists to prevent.
 
 **Cost to fix:** find or build the corpus. Days, not hours.
 
-## 8. Audio is not built
+## 8. ~~Audio is not built~~ — shipped 2026-09-17
 
-F8. Every supplication from the two Hisn-derived sources carries a recording URL
-and nothing plays it. PRD open question 5 is the reason: streaming from a
-third-party host is a dependency we do not control, and bundling is ~80 MB.
+F8. Every hisnmuslim recording is now bundled inside the app at 48 kbps mono
+AAC (~37 MB total for 264 clips), and the two hand-trimmed morning entries
+carry on shipping as MP3s under the same `asset:` scheme. See
+[decisions-pending-review §](decisions-pending-review.md) for the bitrate and
+the silent-three-quls calls.
 
-## 9. Only English chrome
+The three quls in the morning and evening sittings play no audio at all,
+because the only qari that shipped with them was Mishary al-Afasy while
+everything around them is another voice — the swap was jarring, and hisnmuslim
+does not ship per-surah clips for chapter 28 to match. The reader says the
+three quls themselves. Reversing this means finding a matching-qari recording
+and adding it to `_ASSET_AUDIO_BY_SLUG` in `build_content.py`.
 
-F10.1 promises English and Arabic at launch. The content is language-keyed and
-carries Arabic throughout; the app's own strings are English literals in the
-widget tree. Urdu is open question 4 and is an import, not a schema change.
+## 9. Only English chrome — Urdu shipped 2026-09-17, other langs still open
+
+F10.1 promised English and Arabic at launch. What shipped is English and Urdu,
+with the Urdu chip flipping the whole app RTL — the previous Arabic chip is
+retired from the settings pane because the app's own strings were never
+translated to Arabic. Content still carries Arabic throughout wherever the
+book itself is quoted (via `ArabicText`); this is only about the chrome.
 
 ## 10. No layout regression test
 
