@@ -9,6 +9,48 @@ Ordered by how much I would want a second opinion, most first.
 
 ---
 
+## 0. Audio bundled as 48 kbps mono AAC, three quls silent — 2026-09-17
+
+**What I did.** All 264 hisnmuslim recordings referenced by the snapshot were
+downloaded once, transcoded to 48 kbps mono AAC with `afconvert`, and shipped
+as `assets/audio/hisn-N.m4a` inside the app. `build_content.py` rewrites
+`https://www.hisnmuslim.com/audio/ar/N.mp3` → `asset:assets/audio/hisn-N.m4a`
+at build time, and the reader's existing `asset:`-scheme dispatch plays them.
+For the three quls in the morning and evening sittings (`adhkar-4/5/6`), the
+audio is left `null` and the reader shows no play bar.
+
+**Why the bitrate.** The source clips are 128 kbps stereo at 44.1 kHz — 989 KB
+for one minute of a single male voice. Bundling them raw would add ~114 MB to
+the app. AAC at 48 kbps mono is transparent for spoken word (Ars Technica's
+podcast reference; also matches how audiobook services encode narration) and
+brings the payload to ~37 MB. Half a photograph per recording.
+
+**Why the three quls are silent.** The user opened Sakinah in the morning
+sitting, hit Surah al-Ikhlas, and heard Mishary al-Afasy after several minutes
+of hisnmuslim's default qari — the voice swap is exactly what the complaint
+was. hisnmuslim's chapter 28 ships a single Doors-narrated recording that
+covers the whole sitting, not per-surah audio, so there is no matching-qari
+clip to bundle for adhkar-4/5/6. Leaving those three silent means the reader
+says them themselves, which most Muslims already know by heart, and eliminates
+the swap. If a per-surah recording in the same voice ever surfaces, add it in
+`_ASSET_AUDIO_BY_SLUG` and set the URL.
+
+**Cost if wrong.**
+* On bitrate: 37 MB of on-device audio is a real cost to first-download time
+  and to the store binary size (Play recommends <200 MB base; iOS accepts up
+  to 4 GB). A user on a slow connection notices the download; a user on
+  metered data notices the update. Reversing means picking a different codec
+  parameter or, once F1.5-style downloads-on-demand exist, moving audio out
+  of the binary altogether.
+* On the three quls: a user who wanted a recorded ear-worm for al-Falaq gets
+  none. Reversing is one line in `_ASSET_AUDIO_BY_SLUG` per surah.
+
+**To reverse.** Remove the `_ASSET_AUDIO_BY_SLUG` entries or `to_asset_audio`
+return, revert `CONTENT_VERSION` to 3, rerun the build, and drop the
+`assets/audio/hisn-*.m4a` files. The reader is untouched.
+
+---
+
 ## 1. The morning/evening boundary is the **clock**, not prayer times
 
 **What I did.** F3.1 offers the morning sitting from 04:00 to 12:00 local and the
