@@ -1,6 +1,6 @@
 # sakinah_docs
 
-<img src=".github/screenshot.jpg" alt="Adhkar screenshot" width="280" />
+<img src=".github/screenshot-1.jpg" alt="Adhkar home" width="200" /> <img src=".github/screenshot-2.jpg" alt="Adhkar reader" width="200" /> <img src=".github/screenshot-3.jpg" alt="Adhkar counter" width="200" /> <img src=".github/screenshot-4.jpg" alt="Adhkar search" width="200" />
 
 Documentation and agent skills for **Adhkar** — a pocket book of the Muslim:
 the transmitted supplications of the Prophet ﷺ, the prophets before him, his
