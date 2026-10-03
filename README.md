@@ -1,6 +1,8 @@
 # sakinah_docs
 
-Documentation and agent skills for **Sakinah** — a pocket book of the Muslim:
+![Adhkar screenshot](.github/screenshot.jpg)
+
+Documentation and agent skills for **Adhkar** — a pocket book of the Muslim:
 the transmitted supplications of the Prophet ﷺ, the prophets before him, his
 companions and those who followed them.
 
